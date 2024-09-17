@@ -46,7 +46,13 @@ export default function AddCollateral() {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
-          <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"></img>
+          {chain ? (
+            <img
+              src={`https://s2.coinmarketcap.com/static/img/coins/64x64/${chain?.img}.png`}
+            ></img>
+          ) : (
+            ""
+          )}
         </div>
         <div className="addcollateral_bottom">
           <button onClick={handleAddCollateral}>Add Collateral</button>
