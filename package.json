@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "prop-types": "^15.8.1",
+    "react-gauge-chart": "^0.5.1",
+    "recharts": "^2.12.7"
+  }
+}

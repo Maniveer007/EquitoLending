@@ -1,0 +1,153 @@
+.home_container {
+  padding: 0rem 8.5rem;
+  padding-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  /* justify-content: ; */
+  flex-direction: column;
+}
+
+.home_container_container {
+  font-size: 35px;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.home_container_container {
+  color: white;
+  margin-top: 70px;
+}
+
+.home_container_body {
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0c1d2f;
+  flex-direction: column;
+}
+
+.home_container_bottom {
+  color: white;
+  margin-top: 80px;
+  width: 60%;
+}
+
+.home_container_from {
+  border: 1px solid #30325a;
+  width: 45%;
+  margin-top: 30px;
+  padding: 25px;
+  border-radius: 8px;
+  background-color: #202333;
+}
+
+.home_container_from_body {
+  display: flex;
+  margin-top: 30px;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+.home_container_from_body h2 {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.home_container_from_body p {
+  font-size: 17px;
+  font-weight: 500;
+  color: gray;
+}
+
+.home_container_from_input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 40px;
+  margin-top: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.home_container_from_bottom {
+  color: white;
+  margin-top: 20px;
+}
+
+.home_container_from_input img {
+  height: 30px;
+}
+
+.home_container_from_input input {
+  outline: none;
+  color: white;
+  background-color: transparent;
+}
+
+.home_container_to_body {
+  display: flex;
+  margin-top: 30px;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+.home_container_to_body h2 {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.home_container_to_body p {
+  font-size: 17px;
+  font-weight: 500;
+  color: gray;
+}
+
+.home_container_to {
+  border: 1px solid #30325a;
+  width: 45%;
+  padding: 25px;
+  border-radius: 8px;
+  background-color: #202333;
+  margin-top: 30px;
+}
+
+.home_container_to_body {
+  display: flex;
+  margin-top: 30px;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+.home_container_to_input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 40px;
+  margin-top: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.home_container_to_input img {
+  height: 30px;
+}
+
+.home_container_to_input h2 {
+  outline: none;
+  color: white;
+  background-color: transparent;
+}
+
+.home_container_takeloan {
+  background-color: #6f76f6;
+  padding: 8px 18px;
+  margin-top: 30px;
+
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+}

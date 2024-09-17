@@ -57,7 +57,7 @@ export default function ChainSelect({ mode, disabled }: ChainSelectProps) {
       <PopoverTrigger asChild>
         <Button
           role="combobox"
-          className={"w-full sm:w-72 flex items-center gap-2"}
+          className={"w-full sm:w-80 flex items-center gap-2 bg-[#6f76f6] hover:bg-[#484c96]"}
           disabled={disabled}
         >
           <div className="flex items-center gap-2">

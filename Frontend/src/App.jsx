@@ -7,16 +7,17 @@ import equitoLogo from "../public/equito-logo.svg";
 import Navbar from "./components/Navbar";
 import AddCollateral from "./pages/AddCollateral";
 import Home from "./pages/Home";
+import UserLoan from "./pages/UserLoan";
 
 function App() {
   return (
     <>
-      <Navbar />
-
       <Router>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/add-collateral" element={<AddCollateral />} />
+          <Route path="/user-loans" element={<UserLoan />} />
         </Routes>
       </Router>
     </>

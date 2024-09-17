@@ -1,32 +1,41 @@
-// import Link from "next/link";
+import { NavLink } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import "./navbar.css";
 
 export default function Navbar() {
   return (
-    <header className="bg-primary text-primary-foreground shadow-md">
-      <nav className="container mx-auto px-6 py-4">
-        <ul className="flex space-x-4">
-          <li>
-            <a href="/" className="hover:underline">
-              Home
-            </a>
-          </li>
+    <div className="gpt3__navbar">
+      <div className="gpt3__navbar-links">
+        <div className="gpt3__navbar-links_logo">
+          <NavLink to="/">
+            <h2>Logo</h2>
+          </NavLink>
+        </div>
+      </div>
 
-          <li>
-            <a href="/add-collateral" className="hover:underline">
-              Add Collateral
-            </a>
-          </li>
-
-          <li>
-            <a href="/user-loans" className="hover:underline">
-              My Loans
-            </a>
-          </li>
-
-          <ConnectButton className="right" />
-        </ul>
-      </nav>
-    </header>
+      <div className="gpt3__navbar-sign">
+        <NavLink
+          to="/user-loans"
+          className={({ isActive }) =>
+            isActive
+              ? "active-link hover:underline"
+              : "inactive-link hover:underline"
+          }
+        >
+          My Loans
+        </NavLink>
+        <NavLink
+          to="/add-collateral"
+          className={({ isActive }) =>
+            isActive
+              ? "active-link hover:underline"
+              : "inactive-link  hover:underline"
+          }
+        >
+          Add Collateral
+        </NavLink>
+        <ConnectButton className="right" />
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,63 @@
+.addCollateral_container {
+  padding: 2.1rem 8.5rem;
+  padding-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  /* justify-content: ; */
+  flex-direction: column;
+}
+
+.addCollateral_container_from_input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 40px;
+  margin-top: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.addCollateral_container_from_input img {
+  height: 30px;
+}
+
+.addCollateral_container_from_input input {
+  outline: none;
+  color: white;
+  background-color: transparent;
+}
+.addCollateral_container_from_input {
+  margin-top: 40px;
+}
+
+.addCollateral_container_container {
+  border: 1px solid #30325a;
+  width: 45%;
+  margin-top: 30px;
+  padding: 25px;
+  border-radius: 8px;
+  background-color: #202333;
+}
+
+.addcollateral_bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.addcollateral_bottom button {
+  background-color: #6f76f6;
+  padding: 8px 18px;
+  /* margin-top: 30px; */
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.addcollateral_bottom p {
+  font-size: 17px;
+  font-weight: 500;
+  color: gray;
+}
