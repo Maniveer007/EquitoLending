@@ -1,0 +1,811 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_router",
+						"type": "address"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "InsufficientValueSent",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidLength",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidMessageSender",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "chainSelector",
+						"type": "uint256"
+					}
+				],
+				"name": "InvalidPeer",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "router",
+						"type": "address"
+					}
+				],
+				"name": "InvalidRouter",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "OwnableInvalidOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "OwnableUnauthorizedAccount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "RouterAddressCannotBeZero",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "messageHash",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "destinationChainSelector",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "sourceToken",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "sourceAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes",
+						"name": "destinationToken",
+						"type": "bytes"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "destinationAmount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes",
+						"name": "recipient",
+						"type": "bytes"
+					}
+				],
+				"name": "SwapRequested",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "sourceToken",
+						"type": "bytes"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "destinationChainSelector",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "destinationToken",
+						"type": "bytes"
+					}
+				],
+				"name": "calculateDestinationTokenAmount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "chainSelector",
+						"type": "uint256"
+					}
+				],
+				"name": "getPeer",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "lower",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "upper",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct bytes64",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "peers",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "lower",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "upper",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "blockNumber",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "sourceChainSelector",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "bytes32",
+										"name": "lower",
+										"type": "bytes32"
+									},
+									{
+										"internalType": "bytes32",
+										"name": "upper",
+										"type": "bytes32"
+									}
+								],
+								"internalType": "struct bytes64",
+								"name": "sender",
+								"type": "tuple"
+							},
+							{
+								"internalType": "uint256",
+								"name": "destinationChainSelector",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "bytes32",
+										"name": "lower",
+										"type": "bytes32"
+									},
+									{
+										"internalType": "bytes32",
+										"name": "upper",
+										"type": "bytes32"
+									}
+								],
+								"internalType": "struct bytes64",
+								"name": "receiver",
+								"type": "tuple"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "hashedData",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct EquitoMessage",
+						"name": "message",
+						"type": "tuple"
+					},
+					{
+						"internalType": "bytes",
+						"name": "messageData",
+						"type": "bytes"
+					}
+				],
+				"name": "receiveMessage",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "chainSelectors",
+						"type": "uint256[]"
+					},
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "lower",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "upper",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct bytes64[]",
+						"name": "addresses",
+						"type": "tuple[]"
+					}
+				],
+				"name": "setPeers",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "chainSelectors",
+						"type": "uint256[]"
+					},
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "lower",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "upper",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct bytes64[]",
+						"name": "swapAddresses",
+						"type": "tuple[]"
+					}
+				],
+				"name": "setSwapAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "chainSelectors",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "bytes[]",
+						"name": "destinationTokens",
+						"type": "bytes[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "prices",
+						"type": "uint256[]"
+					}
+				],
+				"name": "setTokenPrice",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "destinationChainSelector",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "destinationToken",
+						"type": "bytes"
+					},
+					{
+						"internalType": "bytes",
+						"name": "recipient",
+						"type": "bytes"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "swap",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "destinationChainSelector",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "destinationToken",
+						"type": "bytes"
+					},
+					{
+						"internalType": "bytes",
+						"name": "recipient",
+						"type": "bytes"
+					},
+					{
+						"internalType": "address",
+						"name": "sourceToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "swap",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "",
+						"type": "bytes"
+					}
+				],
+				"name": "tokenPrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"errors": {
+				"InvalidPeer(uint256)": [
+					{
+						"params": {
+							"chainSelector": "The chain selector for which the peer address is requested."
+						}
+					}
+				],
+				"InvalidRouter(address)": [
+					{
+						"params": {
+							"router": "The address of the router that caused the error."
+						}
+					}
+				],
+				"OwnableInvalidOwner(address)": [
+					{
+						"details": "The owner is not a valid owner account. (eg. `address(0)`)"
+					}
+				],
+				"OwnableUnauthorizedAccount(address)": [
+					{
+						"details": "The caller account is not authorized to perform an operation."
+					}
+				]
+			},
+			"events": {
+				"SwapRequested(bytes32,uint256,address,uint256,bytes,uint256,bytes)": {
+					"params": {
+						"destinationAmount": "The amount of destination tokens to be received.",
+						"destinationChainSelector": "The identifier of the destination blockchain.",
+						"destinationToken": "The address of the destination token.",
+						"messageHash": "The unique identifier for the message.",
+						"recipient": "The address of the recipient on the destination chain.",
+						"sourceAmount": "The amount of source tokens to be swapped.",
+						"sourceToken": "The address of the source token."
+					}
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"calculateDestinationTokenAmount(bytes,uint256,uint256,bytes)": {
+					"params": {
+						"amount": "The amount of source tokens.",
+						"destinationChainSelector": "The identifier of the destination chain.",
+						"destinationToken": "The address of the destination token.",
+						"sourceToken": "The address of the source token."
+					},
+					"returns": {
+						"_0": "The calculated amount of destination tokens."
+					}
+				},
+				"constructor": {
+					"params": {
+						"_router": "The address of the router contract."
+					}
+				},
+				"getPeer(uint256)": {
+					"details": "Throws an error if the chain selector is not found in the mapping.",
+					"params": {
+						"chainSelector": "The chain selector for which the peer address is requested."
+					},
+					"returns": {
+						"_0": "The peer address for the given chain selector."
+					}
+				},
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"receiveMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+					"params": {
+						"message": "The Equito message received.",
+						"messageData": "The data of the message received."
+					}
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+				},
+				"setPeers(uint256[],(bytes32,bytes32)[])": {
+					"params": {
+						"addresses": "The list of addresses corresponding to the chain selectors.",
+						"chainSelectors": "The list of chain selectors."
+					}
+				},
+				"setSwapAddress(uint256[],(bytes32,bytes32)[])": {
+					"params": {
+						"chainSelectors": "The list of chain selectors.",
+						"swapAddresses": "The list of swap addresses corresponding to the chain selectors."
+					}
+				},
+				"setTokenPrice(uint256[],bytes[],uint256[])": {
+					"params": {
+						"chainSelectors": "The list of chain selectors.",
+						"destinationTokens": "The list of destination token addresses.",
+						"prices": "The list of prices corresponding to the destination tokens."
+					}
+				},
+				"swap(uint256,bytes,bytes,address,uint256)": {
+					"params": {
+						"amount": "The amount of source tokens to swap.",
+						"destinationChainSelector": "The identifier of the destination chain.",
+						"destinationToken": "The address of the destination token.",
+						"recipient": "The address of the recipient on the destination chain.",
+						"sourceToken": "The address of the source token."
+					}
+				},
+				"swap(uint256,bytes,bytes,uint256)": {
+					"params": {
+						"amount": "The amount of native tokens to swap.",
+						"destinationChainSelector": "The identifier of the destination chain.",
+						"destinationToken": "The address of the destination token.",
+						"recipient": "The address of the recipient on the destination chain."
+					}
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
+			"stateVariables": {
+				"NATIVE_TOKEN": {
+					"details": "The address used to represent the native token."
+				},
+				"tokenPrice": {
+					"details": "The first key is the chain selector, and the second key is the token address."
+				}
+			},
+			"title": "CrossChainSwap",
+			"version": 1
+		},
+		"userdoc": {
+			"errors": {
+				"InsufficientValueSent()": [
+					{
+						"notice": "Thrown when the amount of ether sent with the transaction is insufficient."
+					}
+				],
+				"InvalidLength()": [
+					{
+						"notice": "Thrown when the lengths of arrays are invalid."
+					}
+				],
+				"InvalidMessageSender()": [
+					{
+						"notice": "Thrown when the sender of a message is invalid."
+					}
+				],
+				"InvalidPeer(uint256)": [
+					{
+						"notice": "Thrown when a Peer address is not found in the mapping, given a chain selector."
+					}
+				],
+				"InvalidRouter(address)": [
+					{
+						"notice": "Thrown when the router address is invalid."
+					}
+				],
+				"RouterAddressCannotBeZero()": [
+					{
+						"notice": "Thrown when the router address is zero."
+					}
+				]
+			},
+			"events": {
+				"SwapRequested(bytes32,uint256,address,uint256,bytes,uint256,bytes)": {
+					"notice": "Event emitted when a token swap is requested."
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"calculateDestinationTokenAmount(bytes,uint256,uint256,bytes)": {
+					"notice": "Calculate the destination token amount given the source token amount and destination token."
+				},
+				"constructor": {
+					"notice": "Constructor to initialize the CrossChainSwap contract."
+				},
+				"getPeer(uint256)": {
+					"notice": "Returns the peer address for a given chain selector."
+				},
+				"receiveMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+					"notice": "Receives a cross-chain message from the Router Contract.         It is a wrapper function for the `_receiveMessage` functions, that need to be overridden.         Only the Router Contract is allowed to call this function."
+				},
+				"setPeers(uint256[],(bytes32,bytes32)[])": {
+					"notice": "Allows the owner to set the peer addresses for different chain selectors."
+				},
+				"setSwapAddress(uint256[],(bytes32,bytes32)[])": {
+					"notice": "Update the addresses of the EquitoReceiver contracts on the destination chains."
+				},
+				"setTokenPrice(uint256[],bytes[],uint256[])": {
+					"notice": "Update the prices of supported tokens on different chains."
+				},
+				"swap(uint256,bytes,bytes,address,uint256)": {
+					"notice": "Swap ERC20 tokens from the source chain to any token on the destination chain."
+				},
+				"swap(uint256,bytes,bytes,uint256)": {
+					"notice": "Swap native tokens from the source chain to any token on the destination chain."
+				},
+				"tokenPrice(uint256,bytes)": {
+					"notice": "Mapping to store the prices of supported tokens on different chains."
+				}
+			},
+			"notice": "This contract facilitates token swaps between different blockchains using the Equito protocol.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/examples/CrossChainSwap.sol": "CrossChainSwap"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8ed324d3920bb545059d66ab97d43e43ee85fd3bd52e03e401f020afb0b120f6",
+				"dweb:/ipfs/QmfEckWLmZkDDcoWrkEvMWhms66xwTLff9DDhegYpvHo1a"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+			]
+		},
+		"src/EquitoApp.sol": {
+			"keccak256": "0x20aff65f10dca8d9b48010d9048632248b1f473fc49f006d5b26bc571e711521",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7bf1f256052186a1ef961fcdad6cd09887e75f2f65082ad267b61e19d1d531cf",
+				"dweb:/ipfs/QmfTgmwZPEXfW5KxgbnsnhprcmRcH9SoLhCNumuQeTjVDi"
+			]
+		},
+		"src/examples/CrossChainSwap.sol": {
+			"keccak256": "0xd10fe58be241455d612b8de60a1e02961ce9fe42b61be30a429c5996619776a2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://533471a202404c9256f460b8e624c12a656dfc818fd937212c62529489fc7bf1",
+				"dweb:/ipfs/QmVcNLyn4nndW272NjCT8wY15uensQJrWxqPHE21Zogx3r"
+			]
+		},
+		"src/interfaces/IEquitoReceiver.sol": {
+			"keccak256": "0xb64ed59be348f84a82cc89f4a817ead53b2aa196786e8af9e7459bddcdf6b448",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8c2e5787b6f15ff5dcb8dec914377f5cd50a4a585ef17aff4a7563b206795349",
+				"dweb:/ipfs/QmVFwhmUGLvmLhbbzsN1GKRiPif46us47151PAXox4ACyp"
+			]
+		},
+		"src/interfaces/IRouter.sol": {
+			"keccak256": "0xdf4d80b76f2b627a69c608fdfa3809f1893a83ecac52e0b90d0bf5c1207c25b2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6012acac83909878e4a2680c9d5c75b6c9ff2e0f1433b75349738ff5096f75ca",
+				"dweb:/ipfs/QmeDBp1WjGG7x48kqrBt1uJduX5SUmBJQAsHY3oAdNaBGJ"
+			]
+		},
+		"src/libraries/EquitoMessageLibrary.sol": {
+			"keccak256": "0xcc07267aa6af97e9bb238f44c3d8ec262916625c9a1a8e2510e15e4b6c1d5552",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://47dd6eb755eaf0fef51d4682cc1297d0da980e3134cc993fc760ecbf42be4d1a",
+				"dweb:/ipfs/QmP2YL7KRMw1UhJtvss86HMKiQtqLY7YEGN98GfzSqEEjw"
+			]
+		},
+		"src/libraries/Errors.sol": {
+			"keccak256": "0x71f69a5b3d0b5e763564066ad6f8663069f27148b7eaca7f08b87e4107dc9535",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e5e7fc2f7a922188b9b19f00ff9eabda587687ee188518054e27226a21df5393",
+				"dweb:/ipfs/QmVqKMd9oJdg4cfkdEwcbP3CpHoztnZ1d2e3MAjvKutTt1"
+			]
+		},
+		"src/libraries/TransferHelper.sol": {
+			"keccak256": "0x6223fd558212878378f9e101f973df69b602701c447373af24cb06eecbdf462e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://42ffb5be9a25feb61a81a0707351c7e3c8fafbf44968bdd9d0faae185c8c3ff1",
+				"dweb:/ipfs/QmYtZbV25L53E66NCMWCo6RXGfsMotzy1YnStBaEfarPQM"
+			]
+		}
+	},
+	"version": 1
+}

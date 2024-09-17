@@ -1,66 +1,21 @@
-## Foundry
+# Equito EVM Contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Equito is a cutting-edge cross-chain messaging protocol designed to facilitate seamless, secure, and efficient communication across diverse blockchain networks. As a gateway for interoperability, Equito empowers developers to extend the functionality of decentralized applications (dApps) beyond the constraints of single blockchains.
 
-Foundry consists of:
+This repository provides the smart contracts required for EVM-compatible networks to interact with the Equito cross-chain messaging protocol.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Key Components
 
-## Documentation
+- **Router**, which handles message sending and receiving. Equito Validators listen to events emitted by Routers and perform consensus operations to generate proofs for cross-chain messages validation.
+- **EquitoApp**, which abstracts interaction with the Router and other standard practices to simplify the development of cross-chain applications. Under the hood, it implements the **IEquitoReceiver** interface to handle incoming messages.
+- **ECDSAVerifier**, which verifies ECDSA signatures produced by the Equito Validators for individual and batched cross-chain messages. Under the hood, this contract implements **IEquitoVerifier** that provides a standard interface for signature verification, and **IEquitoFees**, used to calculate fees for sending a cross-chain message.
 
-https://book.getfoundry.sh/
+## Examples
 
-## Usage
+The `examples` directory contains:
+- **PingPong**, featured in the [Build my first Equito App]() tutorial, demonstrates how to send and receive messages using Equito.
+- **CrossChainSwap**, a simple implementation of a cross-chain swap between two networks, demonstrating how to send and receive messages using Equito.
 
-### Build
+## Tests & Scripts
 
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+In addition to the contracts, this repository includes tests to ensure their correct functionality, and scripts to simplify the deployment and interaction with the contracts.

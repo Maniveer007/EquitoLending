@@ -1,0 +1,3131 @@
+{
+	"id": "4aee696161ee6bb66fd027af5a9f3a4c",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.27",
+	"solcLongVersion": "0.8.27+commit.40a35a09",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"src/interfaces/IRouter.sol": {
+				"content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.23;\n\nimport {bytes64, EquitoMessage} from \"../libraries/EquitoMessageLibrary.sol\";\n\n/// @title IRouter\n/// @notice Interface for the Router contract, used to interact with the cross-chain messaging protocol.\ninterface IRouter {\n    /// @notice Emitted when a message send request is created.\n    /// @param message The message being sent.\n    /// @param messageData The data of the message being sent.\n    event MessageSendRequested(EquitoMessage message, bytes messageData);\n\n    /// @notice Emitted when a new verifier is added.\n    /// @param verifier The address of the new verifier.\n    event VerifierAdded(address indexed verifier);\n\n    /// @notice Emitted when a messages has successfully been delivered, ready to be executed.\n    /// @param messageHash The hash of the message that has been delivered.\n    event MessageDelivered(bytes32 messageHash);\n\n    /// @notice Emitted when a message has successfully been executed.\n    /// @param messageHash The hash of the message that has been executed.\n    event MessageExecuted(bytes32 messageHash);\n\n    /// @notice Emitted when the Equito fees are set.\n    event EquitoFeesSet();\n\n    /// @notice Event emitted when the equito address is set.\n    event EquitoAddressSet();\n\n    /// @notice Sends a cross-chain message using Equito.\n    /// @param receiver The address of the receiver.\n    /// @param destinationChainSelector The chain selector of the destination chain.\n    /// @param data The message data.\n    /// @return The hash of the message.\n    function sendMessage(\n        bytes64 calldata receiver,\n        uint256 destinationChainSelector,\n        bytes calldata data\n    ) external payable returns (bytes32);\n\n    /// @notice Verify and execute a message with the appropriate receiver contract.\n    /// @param message The message to be executed.\n    /// @param messageData The data of the message to be executed.\n    /// @param verifierIndex The index of the verifier used to verify the message.\n    /// @param proof The proof to provide to the verifier.\n    function deliverAndExecuteMessage(\n        EquitoMessage calldata message,\n        bytes calldata messageData,\n        uint256 verifierIndex,\n        bytes calldata proof\n    ) external payable;\n\n    /// @notice Delivers messages to be stored for later execution.\n    /// @param messages The list of messages to be delivered.\n    /// @param verifierIndex The index of the verifier used to verify the messages.\n    /// @param proof The proof provided by the verifier.\n    function deliverMessages(\n        EquitoMessage[] calldata messages,\n        uint256 verifierIndex,\n        bytes calldata proof\n    ) external;\n\n    /// @notice Executes a stored message.\n    /// @param message The message to be executed.\n    /// @param messageData The data of the message to be executed.\n    function executeMessage(\n        EquitoMessage calldata message,\n        bytes calldata messageData\n    ) external payable;\n\n    /// @notice Returns the chain selector of the current chain.\n    function chainSelector() external view returns (uint256);\n\n    /// @notice Returns the equito address.\n    function equitoAddress() external view returns (bytes32, bytes32);\n\n\n    function getFee(address sender) external view returns (uint256);\n}\n"
+			},
+			"src/libraries/EquitoMessageLibrary.sol": {
+				"content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.23;\n\n/// @title bytes64\n/// @notice A struct that holds two bytes32 values, used to store a 64-byte value.\n/// @dev Used to store 64-byte long values for the sender and receiver addresses in the EquitoMessage struct.\nstruct bytes64 {\n    bytes32 lower;\n    bytes32 upper;\n}\n\n/// @title EquitoMessage\n/// @notice The ubiquitous message structure for cross-chain communication, used by the Router contract to deliver and receive messages.\n/// @dev Designed to be used by any chain supported by the Equito protocol.\nstruct EquitoMessage {\n    /// @notice Block number at which the message is emitted.\n    uint256 blockNumber;\n    /// @notice Selector for the source chain, acting as an id.\n    uint256 sourceChainSelector;\n    /// @notice Address of the sender.\n    bytes64 sender;\n    /// @notice Selector for the destination chain, acting as an id.\n    uint256 destinationChainSelector;\n    /// @notice Address of the receiver.\n    bytes64 receiver;\n    /// @notice Hash of the payload of the message to be delivered.\n    bytes32 hashedData;\n}\n\n/// @title EquitoMessageLibrary\n/// @notice Library providing helper functions for EquitoMessage struct.\n/// @dev Contains hashing function for EquitoMessage.\nlibrary EquitoMessageLibrary {\n    /// @notice Converts an address to a bytes64 struct.\n    /// @param addr The address to convert.\n    /// @return The bytes64 struct containing the address.\n    /// @dev The upper bytes32 value is set to 0. This operation cannot fail.\n    function addressToBytes64(address addr) internal pure returns (bytes64 memory) {\n        return bytes64(bytes32(uint256(uint160(addr))), bytes32(0));\n    }\n\n    /// @notice Converts a bytes64 struct to an address.\n    /// @param b64 The bytes64 struct to convert.\n    /// @return The address contained in the bytes64 struct's lower bytes32.\n    /// @dev The upper bytes32 value is ignored. This operation cannot fail.\n    function bytes64ToAddress(bytes64 memory b64) internal pure returns (address) {\n        return address(uint160(uint256(b64.lower)));\n    }\n}\n"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		}
+	},
+	"output": {
+		"contracts": {
+			"src/interfaces/IRouter.sol": {
+				"IRouter": {
+					"abi": [
+						{
+							"anonymous": false,
+							"inputs": [],
+							"name": "EquitoAddressSet",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [],
+							"name": "EquitoFeesSet",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": false,
+									"internalType": "bytes32",
+									"name": "messageHash",
+									"type": "bytes32"
+								}
+							],
+							"name": "MessageDelivered",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": false,
+									"internalType": "bytes32",
+									"name": "messageHash",
+									"type": "bytes32"
+								}
+							],
+							"name": "MessageExecuted",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"components": [
+										{
+											"internalType": "uint256",
+											"name": "blockNumber",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "sourceChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "sender",
+											"type": "tuple"
+										},
+										{
+											"internalType": "uint256",
+											"name": "destinationChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "receiver",
+											"type": "tuple"
+										},
+										{
+											"internalType": "bytes32",
+											"name": "hashedData",
+											"type": "bytes32"
+										}
+									],
+									"indexed": false,
+									"internalType": "struct EquitoMessage",
+									"name": "message",
+									"type": "tuple"
+								},
+								{
+									"indexed": false,
+									"internalType": "bytes",
+									"name": "messageData",
+									"type": "bytes"
+								}
+							],
+							"name": "MessageSendRequested",
+							"type": "event"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "verifier",
+									"type": "address"
+								}
+							],
+							"name": "VerifierAdded",
+							"type": "event"
+						},
+						{
+							"inputs": [],
+							"name": "chainSelector",
+							"outputs": [
+								{
+									"internalType": "uint256",
+									"name": "",
+									"type": "uint256"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"components": [
+										{
+											"internalType": "uint256",
+											"name": "blockNumber",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "sourceChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "sender",
+											"type": "tuple"
+										},
+										{
+											"internalType": "uint256",
+											"name": "destinationChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "receiver",
+											"type": "tuple"
+										},
+										{
+											"internalType": "bytes32",
+											"name": "hashedData",
+											"type": "bytes32"
+										}
+									],
+									"internalType": "struct EquitoMessage",
+									"name": "message",
+									"type": "tuple"
+								},
+								{
+									"internalType": "bytes",
+									"name": "messageData",
+									"type": "bytes"
+								},
+								{
+									"internalType": "uint256",
+									"name": "verifierIndex",
+									"type": "uint256"
+								},
+								{
+									"internalType": "bytes",
+									"name": "proof",
+									"type": "bytes"
+								}
+							],
+							"name": "deliverAndExecuteMessage",
+							"outputs": [],
+							"stateMutability": "payable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"components": [
+										{
+											"internalType": "uint256",
+											"name": "blockNumber",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "sourceChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "sender",
+											"type": "tuple"
+										},
+										{
+											"internalType": "uint256",
+											"name": "destinationChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "receiver",
+											"type": "tuple"
+										},
+										{
+											"internalType": "bytes32",
+											"name": "hashedData",
+											"type": "bytes32"
+										}
+									],
+									"internalType": "struct EquitoMessage[]",
+									"name": "messages",
+									"type": "tuple[]"
+								},
+								{
+									"internalType": "uint256",
+									"name": "verifierIndex",
+									"type": "uint256"
+								},
+								{
+									"internalType": "bytes",
+									"name": "proof",
+									"type": "bytes"
+								}
+							],
+							"name": "deliverMessages",
+							"outputs": [],
+							"stateMutability": "nonpayable",
+							"type": "function"
+						},
+						{
+							"inputs": [],
+							"name": "equitoAddress",
+							"outputs": [
+								{
+									"internalType": "bytes32",
+									"name": "",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "",
+									"type": "bytes32"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"components": [
+										{
+											"internalType": "uint256",
+											"name": "blockNumber",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "sourceChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "sender",
+											"type": "tuple"
+										},
+										{
+											"internalType": "uint256",
+											"name": "destinationChainSelector",
+											"type": "uint256"
+										},
+										{
+											"components": [
+												{
+													"internalType": "bytes32",
+													"name": "lower",
+													"type": "bytes32"
+												},
+												{
+													"internalType": "bytes32",
+													"name": "upper",
+													"type": "bytes32"
+												}
+											],
+											"internalType": "struct bytes64",
+											"name": "receiver",
+											"type": "tuple"
+										},
+										{
+											"internalType": "bytes32",
+											"name": "hashedData",
+											"type": "bytes32"
+										}
+									],
+									"internalType": "struct EquitoMessage",
+									"name": "message",
+									"type": "tuple"
+								},
+								{
+									"internalType": "bytes",
+									"name": "messageData",
+									"type": "bytes"
+								}
+							],
+							"name": "executeMessage",
+							"outputs": [],
+							"stateMutability": "payable",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "sender",
+									"type": "address"
+								}
+							],
+							"name": "getFee",
+							"outputs": [
+								{
+									"internalType": "uint256",
+									"name": "",
+									"type": "uint256"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"components": [
+										{
+											"internalType": "bytes32",
+											"name": "lower",
+											"type": "bytes32"
+										},
+										{
+											"internalType": "bytes32",
+											"name": "upper",
+											"type": "bytes32"
+										}
+									],
+									"internalType": "struct bytes64",
+									"name": "receiver",
+									"type": "tuple"
+								},
+								{
+									"internalType": "uint256",
+									"name": "destinationChainSelector",
+									"type": "uint256"
+								},
+								{
+									"internalType": "bytes",
+									"name": "data",
+									"type": "bytes"
+								}
+							],
+							"name": "sendMessage",
+							"outputs": [
+								{
+									"internalType": "bytes32",
+									"name": "",
+									"type": "bytes32"
+								}
+							],
+							"stateMutability": "payable",
+							"type": "function"
+						}
+					],
+					"devdoc": {
+						"events": {
+							"MessageDelivered(bytes32)": {
+								"params": {
+									"messageHash": "The hash of the message that has been delivered."
+								}
+							},
+							"MessageExecuted(bytes32)": {
+								"params": {
+									"messageHash": "The hash of the message that has been executed."
+								}
+							},
+							"MessageSendRequested((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+								"params": {
+									"message": "The message being sent.",
+									"messageData": "The data of the message being sent."
+								}
+							},
+							"VerifierAdded(address)": {
+								"params": {
+									"verifier": "The address of the new verifier."
+								}
+							}
+						},
+						"kind": "dev",
+						"methods": {
+							"deliverAndExecuteMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes,uint256,bytes)": {
+								"params": {
+									"message": "The message to be executed.",
+									"messageData": "The data of the message to be executed.",
+									"proof": "The proof to provide to the verifier.",
+									"verifierIndex": "The index of the verifier used to verify the message."
+								}
+							},
+							"deliverMessages((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32)[],uint256,bytes)": {
+								"params": {
+									"messages": "The list of messages to be delivered.",
+									"proof": "The proof provided by the verifier.",
+									"verifierIndex": "The index of the verifier used to verify the messages."
+								}
+							},
+							"executeMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+								"params": {
+									"message": "The message to be executed.",
+									"messageData": "The data of the message to be executed."
+								}
+							},
+							"sendMessage((bytes32,bytes32),uint256,bytes)": {
+								"params": {
+									"data": "The message data.",
+									"destinationChainSelector": "The chain selector of the destination chain.",
+									"receiver": "The address of the receiver."
+								},
+								"returns": {
+									"_0": "The hash of the message."
+								}
+							}
+						},
+						"title": "IRouter",
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {
+							"chainSelector()": "4e4bc847",
+							"deliverAndExecuteMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes,uint256,bytes)": "f0a5704a",
+							"deliverMessages((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32)[],uint256,bytes)": "71c67f3a",
+							"equitoAddress()": "2ef5c989",
+							"executeMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": "27d951e9",
+							"getFee(address)": "b88c9148",
+							"sendMessage((bytes32,bytes32),uint256,bytes)": "dc203137"
+						}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.27+commit.40a35a09\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[],\"name\":\"EquitoAddressSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[],\"name\":\"EquitoFeesSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"messageHash\",\"type\":\"bytes32\"}],\"name\":\"MessageDelivered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"messageHash\",\"type\":\"bytes32\"}],\"name\":\"MessageExecuted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"sourceChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"sender\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"destinationChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"receiver\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"hashedData\",\"type\":\"bytes32\"}],\"indexed\":false,\"internalType\":\"struct EquitoMessage\",\"name\":\"message\",\"type\":\"tuple\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"messageData\",\"type\":\"bytes\"}],\"name\":\"MessageSendRequested\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"verifier\",\"type\":\"address\"}],\"name\":\"VerifierAdded\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"chainSelector\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"sourceChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"sender\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"destinationChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"receiver\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"hashedData\",\"type\":\"bytes32\"}],\"internalType\":\"struct EquitoMessage\",\"name\":\"message\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"messageData\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"verifierIndex\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"}],\"name\":\"deliverAndExecuteMessage\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"sourceChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"sender\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"destinationChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"receiver\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"hashedData\",\"type\":\"bytes32\"}],\"internalType\":\"struct EquitoMessage[]\",\"name\":\"messages\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"verifierIndex\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"}],\"name\":\"deliverMessages\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"equitoAddress\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"blockNumber\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"sourceChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"sender\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"destinationChainSelector\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"receiver\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"hashedData\",\"type\":\"bytes32\"}],\"internalType\":\"struct EquitoMessage\",\"name\":\"message\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"messageData\",\"type\":\"bytes\"}],\"name\":\"executeMessage\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"getFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"lower\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"upper\",\"type\":\"bytes32\"}],\"internalType\":\"struct bytes64\",\"name\":\"receiver\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"destinationChainSelector\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"sendMessage\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"MessageDelivered(bytes32)\":{\"params\":{\"messageHash\":\"The hash of the message that has been delivered.\"}},\"MessageExecuted(bytes32)\":{\"params\":{\"messageHash\":\"The hash of the message that has been executed.\"}},\"MessageSendRequested((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)\":{\"params\":{\"message\":\"The message being sent.\",\"messageData\":\"The data of the message being sent.\"}},\"VerifierAdded(address)\":{\"params\":{\"verifier\":\"The address of the new verifier.\"}}},\"kind\":\"dev\",\"methods\":{\"deliverAndExecuteMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes,uint256,bytes)\":{\"params\":{\"message\":\"The message to be executed.\",\"messageData\":\"The data of the message to be executed.\",\"proof\":\"The proof to provide to the verifier.\",\"verifierIndex\":\"The index of the verifier used to verify the message.\"}},\"deliverMessages((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32)[],uint256,bytes)\":{\"params\":{\"messages\":\"The list of messages to be delivered.\",\"proof\":\"The proof provided by the verifier.\",\"verifierIndex\":\"The index of the verifier used to verify the messages.\"}},\"executeMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)\":{\"params\":{\"message\":\"The message to be executed.\",\"messageData\":\"The data of the message to be executed.\"}},\"sendMessage((bytes32,bytes32),uint256,bytes)\":{\"params\":{\"data\":\"The message data.\",\"destinationChainSelector\":\"The chain selector of the destination chain.\",\"receiver\":\"The address of the receiver.\"},\"returns\":{\"_0\":\"The hash of the message.\"}}},\"title\":\"IRouter\",\"version\":1},\"userdoc\":{\"events\":{\"EquitoAddressSet()\":{\"notice\":\"Event emitted when the equito address is set.\"},\"EquitoFeesSet()\":{\"notice\":\"Emitted when the Equito fees are set.\"},\"MessageDelivered(bytes32)\":{\"notice\":\"Emitted when a messages has successfully been delivered, ready to be executed.\"},\"MessageExecuted(bytes32)\":{\"notice\":\"Emitted when a message has successfully been executed.\"},\"MessageSendRequested((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)\":{\"notice\":\"Emitted when a message send request is created.\"},\"VerifierAdded(address)\":{\"notice\":\"Emitted when a new verifier is added.\"}},\"kind\":\"user\",\"methods\":{\"chainSelector()\":{\"notice\":\"Returns the chain selector of the current chain.\"},\"deliverAndExecuteMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes,uint256,bytes)\":{\"notice\":\"Verify and execute a message with the appropriate receiver contract.\"},\"deliverMessages((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32)[],uint256,bytes)\":{\"notice\":\"Delivers messages to be stored for later execution.\"},\"equitoAddress()\":{\"notice\":\"Returns the equito address.\"},\"executeMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)\":{\"notice\":\"Executes a stored message.\"},\"sendMessage((bytes32,bytes32),uint256,bytes)\":{\"notice\":\"Sends a cross-chain message using Equito.\"}},\"notice\":\"Interface for the Router contract, used to interact with the cross-chain messaging protocol.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/interfaces/IRouter.sol\":\"IRouter\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"src/interfaces/IRouter.sol\":{\"keccak256\":\"0xdf4d80b76f2b627a69c608fdfa3809f1893a83ecac52e0b90d0bf5c1207c25b2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6012acac83909878e4a2680c9d5c75b6c9ff2e0f1433b75349738ff5096f75ca\",\"dweb:/ipfs/QmeDBp1WjGG7x48kqrBt1uJduX5SUmBJQAsHY3oAdNaBGJ\"]},\"src/libraries/EquitoMessageLibrary.sol\":{\"keccak256\":\"0xcc07267aa6af97e9bb238f44c3d8ec262916625c9a1a8e2510e15e4b6c1d5552\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://47dd6eb755eaf0fef51d4682cc1297d0da980e3134cc993fc760ecbf42be4d1a\",\"dweb:/ipfs/QmP2YL7KRMw1UhJtvss86HMKiQtqLY7YEGN98GfzSqEEjw\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"events": {
+							"EquitoAddressSet()": {
+								"notice": "Event emitted when the equito address is set."
+							},
+							"EquitoFeesSet()": {
+								"notice": "Emitted when the Equito fees are set."
+							},
+							"MessageDelivered(bytes32)": {
+								"notice": "Emitted when a messages has successfully been delivered, ready to be executed."
+							},
+							"MessageExecuted(bytes32)": {
+								"notice": "Emitted when a message has successfully been executed."
+							},
+							"MessageSendRequested((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+								"notice": "Emitted when a message send request is created."
+							},
+							"VerifierAdded(address)": {
+								"notice": "Emitted when a new verifier is added."
+							}
+						},
+						"kind": "user",
+						"methods": {
+							"chainSelector()": {
+								"notice": "Returns the chain selector of the current chain."
+							},
+							"deliverAndExecuteMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes,uint256,bytes)": {
+								"notice": "Verify and execute a message with the appropriate receiver contract."
+							},
+							"deliverMessages((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32)[],uint256,bytes)": {
+								"notice": "Delivers messages to be stored for later execution."
+							},
+							"equitoAddress()": {
+								"notice": "Returns the equito address."
+							},
+							"executeMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+								"notice": "Executes a stored message."
+							},
+							"sendMessage((bytes32,bytes32),uint256,bytes)": {
+								"notice": "Sends a cross-chain message using Equito."
+							}
+						},
+						"notice": "Interface for the Router contract, used to interact with the cross-chain messaging protocol.",
+						"version": 1
+					}
+				}
+			},
+			"src/libraries/EquitoMessageLibrary.sol": {
+				"EquitoMessageLibrary": {
+					"abi": [],
+					"devdoc": {
+						"details": "Contains hashing function for EquitoMessage.",
+						"kind": "dev",
+						"methods": {},
+						"title": "EquitoMessageLibrary",
+						"version": 1
+					},
+					"evm": {
+						"assembly": "    /* \"src/libraries/EquitoMessageLibrary.sol\":1257:2092  library EquitoMessageLibrary {... */\n  dataSize(sub_0)\n  dataOffset(sub_0)\n  0x0b\n  dup3\n  dup3\n  dup3\n  codecopy\n  dup1\n  mload\n  0x00\n  byte\n  0x73\n  eq\n  tag_1\n  jumpi\n  mstore(0x00, 0x4e487b7100000000000000000000000000000000000000000000000000000000)\n  mstore(0x04, 0x00)\n  revert(0x00, 0x24)\ntag_1:\n  mstore(0x00, address)\n  0x73\n  dup2\n  mstore8\n  dup3\n  dup2\n  return\nstop\n\nsub_0: assembly {\n        /* \"src/libraries/EquitoMessageLibrary.sol\":1257:2092  library EquitoMessageLibrary {... */\n      eq(address, deployTimeAddress())\n      mstore(0x40, 0x80)\n      revert(0x00, 0x00)\n\n    auxdata: 0xa2646970667358221220e237c74de85bebcd0ed106bb0167c2bbaa6620e5cbdc9beb42df8eb1715a17d464736f6c634300081b0033\n}\n",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "6055604b600b8282823980515f1a607314603f577f4e487b71000000000000000000000000000000000000000000000000000000005f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f5ffdfea2646970667358221220e237c74de85bebcd0ed106bb0167c2bbaa6620e5cbdc9beb42df8eb1715a17d464736f6c634300081b0033",
+							"opcodes": "PUSH1 0x55 PUSH1 0x4B PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH0 BYTE PUSH1 0x73 EQ PUSH1 0x3F JUMPI PUSH32 0x4E487B7100000000000000000000000000000000000000000000000000000000 PUSH0 MSTORE PUSH0 PUSH1 0x4 MSTORE PUSH1 0x24 PUSH0 REVERT JUMPDEST ADDRESS PUSH0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 PUSH0 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xE2 CALLDATACOPY 0xC7 0x4D 0xE8 JUMPDEST 0xEB 0xCD 0xE 0xD1 MOD 0xBB ADD PUSH8 0xC2BBAA6620E5CBDC SWAP12 0xEB TIMESTAMP 0xDF DUP15 0xB1 PUSH18 0x5A17D464736F6C634300081B003300000000 ",
+							"sourceMap": "1257:835:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "730000000000000000000000000000000000000000301460806040525f5ffdfea2646970667358221220e237c74de85bebcd0ed106bb0167c2bbaa6620e5cbdc9beb42df8eb1715a17d464736f6c634300081b0033",
+							"opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 PUSH0 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xE2 CALLDATACOPY 0xC7 0x4D 0xE8 JUMPDEST 0xEB 0xCD 0xE 0xD1 MOD 0xBB ADD PUSH8 0xC2BBAA6620E5CBDC SWAP12 0xEB TIMESTAMP 0xDF DUP15 0xB1 PUSH18 0x5A17D464736F6C634300081B003300000000 ",
+							"sourceMap": "1257:835:1:-:0;;;;;;;;"
+						},
+						"gasEstimates": {
+							"creation": {
+								"codeDepositCost": "17000",
+								"executionCost": "92",
+								"totalCost": "17092"
+							},
+							"internal": {
+								"addressToBytes64(address)": "infinite",
+								"bytes64ToAddress(struct bytes64 memory)": "infinite"
+							}
+						},
+						"legacyAssembly": {
+							".code": [
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH #[$]",
+									"source": 1,
+									"value": "0000000000000000000000000000000000000000000000000000000000000000"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH [$]",
+									"source": 1,
+									"value": "0000000000000000000000000000000000000000000000000000000000000000"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "B"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "DUP3",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "DUP3",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "DUP3",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "CODECOPY",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "DUP1",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "MLOAD",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "0"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "BYTE",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "73"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "EQ",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH [tag]",
+									"source": 1,
+									"value": "1"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "JUMPI",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "4E487B7100000000000000000000000000000000000000000000000000000000"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "0"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "MSTORE",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "0"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "4"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "MSTORE",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "24"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "0"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "REVERT",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "tag",
+									"source": 1,
+									"value": "1"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "JUMPDEST",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "ADDRESS",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "0"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "MSTORE",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "PUSH",
+									"source": 1,
+									"value": "73"
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "DUP2",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "MSTORE8",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "DUP3",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "DUP2",
+									"source": 1
+								},
+								{
+									"begin": 1257,
+									"end": 2092,
+									"name": "RETURN",
+									"source": 1
+								}
+							],
+							".data": {
+								"0": {
+									".auxdata": "a2646970667358221220e237c74de85bebcd0ed106bb0167c2bbaa6620e5cbdc9beb42df8eb1715a17d464736f6c634300081b0033",
+									".code": [
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "PUSHDEPLOYADDRESS",
+											"source": 1
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "ADDRESS",
+											"source": 1
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "EQ",
+											"source": 1
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "PUSH",
+											"source": 1,
+											"value": "80"
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "PUSH",
+											"source": 1,
+											"value": "40"
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "MSTORE",
+											"source": 1
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "PUSH",
+											"source": 1,
+											"value": "0"
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "PUSH",
+											"source": 1,
+											"value": "0"
+										},
+										{
+											"begin": 1257,
+											"end": 2092,
+											"name": "REVERT",
+											"source": 1
+										}
+									]
+								}
+							},
+							"sourceList": [
+								"src/interfaces/IRouter.sol",
+								"src/libraries/EquitoMessageLibrary.sol",
+								"#utility.yul"
+							]
+						},
+						"methodIdentifiers": {}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.27+commit.40a35a09\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"Contains hashing function for EquitoMessage.\",\"kind\":\"dev\",\"methods\":{},\"title\":\"EquitoMessageLibrary\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Library providing helper functions for EquitoMessage struct.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/libraries/EquitoMessageLibrary.sol\":\"EquitoMessageLibrary\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"src/libraries/EquitoMessageLibrary.sol\":{\"keccak256\":\"0xcc07267aa6af97e9bb238f44c3d8ec262916625c9a1a8e2510e15e4b6c1d5552\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://47dd6eb755eaf0fef51d4682cc1297d0da980e3134cc993fc760ecbf42be4d1a\",\"dweb:/ipfs/QmP2YL7KRMw1UhJtvss86HMKiQtqLY7YEGN98GfzSqEEjw\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"notice": "Library providing helper functions for EquitoMessage struct.",
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"src/interfaces/IRouter.sol": {
+				"ast": {
+					"absolutePath": "src/interfaces/IRouter.sol",
+					"exportedSymbols": {
+						"EquitoMessage": [
+							133
+						],
+						"IRouter": [
+							103
+						],
+						"bytes64": [
+							111
+						]
+					},
+					"id": 104,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".23"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "33:24:0"
+						},
+						{
+							"absolutePath": "src/libraries/EquitoMessageLibrary.sol",
+							"file": "../libraries/EquitoMessageLibrary.sol",
+							"id": 4,
+							"nameLocation": "-1:-1:-1",
+							"nodeType": "ImportDirective",
+							"scope": 104,
+							"sourceUnit": 185,
+							"src": "59:77:0",
+							"symbolAliases": [
+								{
+									"foreign": {
+										"id": 2,
+										"name": "bytes64",
+										"nodeType": "Identifier",
+										"overloadedDeclarations": [],
+										"referencedDeclaration": 111,
+										"src": "67:7:0",
+										"typeDescriptions": {}
+									},
+									"nameLocation": "-1:-1:-1"
+								},
+								{
+									"foreign": {
+										"id": 3,
+										"name": "EquitoMessage",
+										"nodeType": "Identifier",
+										"overloadedDeclarations": [],
+										"referencedDeclaration": 133,
+										"src": "76:13:0",
+										"typeDescriptions": {}
+									},
+									"nameLocation": "-1:-1:-1"
+								}
+							],
+							"unitAlias": ""
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "IRouter",
+							"contractDependencies": [],
+							"contractKind": "interface",
+							"documentation": {
+								"id": 5,
+								"nodeType": "StructuredDocumentation",
+								"src": "138:124:0",
+								"text": "@title IRouter\n @notice Interface for the Router contract, used to interact with the cross-chain messaging protocol."
+							},
+							"fullyImplemented": false,
+							"id": 103,
+							"linearizedBaseContracts": [
+								103
+							],
+							"name": "IRouter",
+							"nameLocation": "272:7:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 6,
+										"nodeType": "StructuredDocumentation",
+										"src": "286:169:0",
+										"text": "@notice Emitted when a message send request is created.\n @param message The message being sent.\n @param messageData The data of the message being sent."
+									},
+									"eventSelector": "e8fb646086f78a901ffad273bf2f835a72e0d99bfc654a0a5f9eea873e6a0c32",
+									"id": 13,
+									"name": "MessageSendRequested",
+									"nameLocation": "466:20:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 12,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 9,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "message",
+												"nameLocation": "501:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 13,
+												"src": "487:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_EquitoMessage_$133_memory_ptr",
+													"typeString": "struct EquitoMessage"
+												},
+												"typeName": {
+													"id": 8,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 7,
+														"name": "EquitoMessage",
+														"nameLocations": [
+															"487:13:0"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 133,
+														"src": "487:13:0"
+													},
+													"referencedDeclaration": 133,
+													"src": "487:13:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_EquitoMessage_$133_storage_ptr",
+														"typeString": "struct EquitoMessage"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 11,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "messageData",
+												"nameLocation": "516:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 13,
+												"src": "510:17:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes_memory_ptr",
+													"typeString": "bytes"
+												},
+												"typeName": {
+													"id": 10,
+													"name": "bytes",
+													"nodeType": "ElementaryTypeName",
+													"src": "510:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes_storage_ptr",
+														"typeString": "bytes"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "486:42:0"
+									},
+									"src": "460:69:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 14,
+										"nodeType": "StructuredDocumentation",
+										"src": "535:106:0",
+										"text": "@notice Emitted when a new verifier is added.\n @param verifier The address of the new verifier."
+									},
+									"eventSelector": "6d05492139c5ea989514a5d2150c028041e5c087e2a39967f67dc7d2655adb81",
+									"id": 18,
+									"name": "VerifierAdded",
+									"nameLocation": "652:13:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 17,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 16,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "verifier",
+												"nameLocation": "682:8:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 18,
+												"src": "666:24:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 15,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "666:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "665:26:0"
+									},
+									"src": "646:46:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 19,
+										"nodeType": "StructuredDocumentation",
+										"src": "698:166:0",
+										"text": "@notice Emitted when a messages has successfully been delivered, ready to be executed.\n @param messageHash The hash of the message that has been delivered."
+									},
+									"eventSelector": "fa39010b12e169f2d7e9a76e381216416dbf5eb59db117ae979592ee9f323885",
+									"id": 23,
+									"name": "MessageDelivered",
+									"nameLocation": "875:16:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 22,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 21,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "messageHash",
+												"nameLocation": "900:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 23,
+												"src": "892:19:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 20,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "892:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "891:21:0"
+									},
+									"src": "869:44:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 24,
+										"nodeType": "StructuredDocumentation",
+										"src": "919:141:0",
+										"text": "@notice Emitted when a message has successfully been executed.\n @param messageHash The hash of the message that has been executed."
+									},
+									"eventSelector": "e7d1e1f435233f7a187624ac11afaf32ee0da368cef8a5625be394412f619254",
+									"id": 28,
+									"name": "MessageExecuted",
+									"nameLocation": "1071:15:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 27,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 26,
+												"indexed": false,
+												"mutability": "mutable",
+												"name": "messageHash",
+												"nameLocation": "1095:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 28,
+												"src": "1087:19:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 25,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "1087:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1086:21:0"
+									},
+									"src": "1065:43:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 29,
+										"nodeType": "StructuredDocumentation",
+										"src": "1114:49:0",
+										"text": "@notice Emitted when the Equito fees are set."
+									},
+									"eventSelector": "45a9541ef904ba2e22061113303f89a6349e3f1a58b8ac0f22dd605cc77c913d",
+									"id": 31,
+									"name": "EquitoFeesSet",
+									"nameLocation": "1174:13:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 30,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "1187:2:0"
+									},
+									"src": "1168:22:0"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 32,
+										"nodeType": "StructuredDocumentation",
+										"src": "1196:57:0",
+										"text": "@notice Event emitted when the equito address is set."
+									},
+									"eventSelector": "7f63ab2585aef72e130f0467fe44b74599ff1263eeb779e527ae4fbf6b5df442",
+									"id": 34,
+									"name": "EquitoAddressSet",
+									"nameLocation": "1264:16:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 33,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "1280:2:0"
+									},
+									"src": "1258:25:0"
+								},
+								{
+									"documentation": {
+										"id": 35,
+										"nodeType": "StructuredDocumentation",
+										"src": "1289:270:0",
+										"text": "@notice Sends a cross-chain message using Equito.\n @param receiver The address of the receiver.\n @param destinationChainSelector The chain selector of the destination chain.\n @param data The message data.\n @return The hash of the message."
+									},
+									"functionSelector": "dc203137",
+									"id": 47,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "sendMessage",
+									"nameLocation": "1573:11:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 43,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 38,
+												"mutability": "mutable",
+												"name": "receiver",
+												"nameLocation": "1611:8:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 47,
+												"src": "1594:25:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_bytes64_$111_calldata_ptr",
+													"typeString": "struct bytes64"
+												},
+												"typeName": {
+													"id": 37,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 36,
+														"name": "bytes64",
+														"nameLocations": [
+															"1594:7:0"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 111,
+														"src": "1594:7:0"
+													},
+													"referencedDeclaration": 111,
+													"src": "1594:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_bytes64_$111_storage_ptr",
+														"typeString": "struct bytes64"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 40,
+												"mutability": "mutable",
+												"name": "destinationChainSelector",
+												"nameLocation": "1637:24:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 47,
+												"src": "1629:32:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 39,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "1629:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 42,
+												"mutability": "mutable",
+												"name": "data",
+												"nameLocation": "1686:4:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 47,
+												"src": "1671:19:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes_calldata_ptr",
+													"typeString": "bytes"
+												},
+												"typeName": {
+													"id": 41,
+													"name": "bytes",
+													"nodeType": "ElementaryTypeName",
+													"src": "1671:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes_storage_ptr",
+														"typeString": "bytes"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1584:112:0"
+									},
+									"returnParameters": {
+										"id": 46,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 45,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 47,
+												"src": "1723:7:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 44,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "1723:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1722:9:0"
+									},
+									"scope": 103,
+									"src": "1564:168:0",
+									"stateMutability": "payable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 48,
+										"nodeType": "StructuredDocumentation",
+										"src": "1738:340:0",
+										"text": "@notice Verify and execute a message with the appropriate receiver contract.\n @param message The message to be executed.\n @param messageData The data of the message to be executed.\n @param verifierIndex The index of the verifier used to verify the message.\n @param proof The proof to provide to the verifier."
+									},
+									"functionSelector": "f0a5704a",
+									"id": 60,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "deliverAndExecuteMessage",
+									"nameLocation": "2092:24:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 58,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 51,
+												"mutability": "mutable",
+												"name": "message",
+												"nameLocation": "2149:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 60,
+												"src": "2126:30:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_EquitoMessage_$133_calldata_ptr",
+													"typeString": "struct EquitoMessage"
+												},
+												"typeName": {
+													"id": 50,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 49,
+														"name": "EquitoMessage",
+														"nameLocations": [
+															"2126:13:0"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 133,
+														"src": "2126:13:0"
+													},
+													"referencedDeclaration": 133,
+													"src": "2126:13:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_EquitoMessage_$133_storage_ptr",
+														"typeString": "struct EquitoMessage"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 53,
+												"mutability": "mutable",
+												"name": "messageData",
+												"nameLocation": "2181:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 60,
+												"src": "2166:26:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes_calldata_ptr",
+													"typeString": "bytes"
+												},
+												"typeName": {
+													"id": 52,
+													"name": "bytes",
+													"nodeType": "ElementaryTypeName",
+													"src": "2166:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes_storage_ptr",
+														"typeString": "bytes"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 55,
+												"mutability": "mutable",
+												"name": "verifierIndex",
+												"nameLocation": "2210:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 60,
+												"src": "2202:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 54,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "2202:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 57,
+												"mutability": "mutable",
+												"name": "proof",
+												"nameLocation": "2248:5:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 60,
+												"src": "2233:20:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes_calldata_ptr",
+													"typeString": "bytes"
+												},
+												"typeName": {
+													"id": 56,
+													"name": "bytes",
+													"nodeType": "ElementaryTypeName",
+													"src": "2233:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes_storage_ptr",
+														"typeString": "bytes"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "2116:143:0"
+									},
+									"returnParameters": {
+										"id": 59,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "2276:0:0"
+									},
+									"scope": 103,
+									"src": "2083:194:0",
+									"stateMutability": "payable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 61,
+										"nodeType": "StructuredDocumentation",
+										"src": "2283:266:0",
+										"text": "@notice Delivers messages to be stored for later execution.\n @param messages The list of messages to be delivered.\n @param verifierIndex The index of the verifier used to verify the messages.\n @param proof The proof provided by the verifier."
+									},
+									"functionSelector": "71c67f3a",
+									"id": 72,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "deliverMessages",
+									"nameLocation": "2563:15:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 70,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 65,
+												"mutability": "mutable",
+												"name": "messages",
+												"nameLocation": "2613:8:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 72,
+												"src": "2588:33:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_array$_t_struct$_EquitoMessage_$133_calldata_ptr_$dyn_calldata_ptr",
+													"typeString": "struct EquitoMessage[]"
+												},
+												"typeName": {
+													"baseType": {
+														"id": 63,
+														"nodeType": "UserDefinedTypeName",
+														"pathNode": {
+															"id": 62,
+															"name": "EquitoMessage",
+															"nameLocations": [
+																"2588:13:0"
+															],
+															"nodeType": "IdentifierPath",
+															"referencedDeclaration": 133,
+															"src": "2588:13:0"
+														},
+														"referencedDeclaration": 133,
+														"src": "2588:13:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_struct$_EquitoMessage_$133_storage_ptr",
+															"typeString": "struct EquitoMessage"
+														}
+													},
+													"id": 64,
+													"nodeType": "ArrayTypeName",
+													"src": "2588:15:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_array$_t_struct$_EquitoMessage_$133_storage_$dyn_storage_ptr",
+														"typeString": "struct EquitoMessage[]"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 67,
+												"mutability": "mutable",
+												"name": "verifierIndex",
+												"nameLocation": "2639:13:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 72,
+												"src": "2631:21:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 66,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "2631:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 69,
+												"mutability": "mutable",
+												"name": "proof",
+												"nameLocation": "2677:5:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 72,
+												"src": "2662:20:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes_calldata_ptr",
+													"typeString": "bytes"
+												},
+												"typeName": {
+													"id": 68,
+													"name": "bytes",
+													"nodeType": "ElementaryTypeName",
+													"src": "2662:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes_storage_ptr",
+														"typeString": "bytes"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "2578:110:0"
+									},
+									"returnParameters": {
+										"id": 71,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "2697:0:0"
+									},
+									"scope": 103,
+									"src": "2554:144:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 73,
+										"nodeType": "StructuredDocumentation",
+										"src": "2704:156:0",
+										"text": "@notice Executes a stored message.\n @param message The message to be executed.\n @param messageData The data of the message to be executed."
+									},
+									"functionSelector": "27d951e9",
+									"id": 81,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "executeMessage",
+									"nameLocation": "2874:14:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 79,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 76,
+												"mutability": "mutable",
+												"name": "message",
+												"nameLocation": "2921:7:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 81,
+												"src": "2898:30:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_EquitoMessage_$133_calldata_ptr",
+													"typeString": "struct EquitoMessage"
+												},
+												"typeName": {
+													"id": 75,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 74,
+														"name": "EquitoMessage",
+														"nameLocations": [
+															"2898:13:0"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 133,
+														"src": "2898:13:0"
+													},
+													"referencedDeclaration": 133,
+													"src": "2898:13:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_EquitoMessage_$133_storage_ptr",
+														"typeString": "struct EquitoMessage"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 78,
+												"mutability": "mutable",
+												"name": "messageData",
+												"nameLocation": "2953:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 81,
+												"src": "2938:26:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes_calldata_ptr",
+													"typeString": "bytes"
+												},
+												"typeName": {
+													"id": 77,
+													"name": "bytes",
+													"nodeType": "ElementaryTypeName",
+													"src": "2938:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes_storage_ptr",
+														"typeString": "bytes"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "2888:82:0"
+									},
+									"returnParameters": {
+										"id": 80,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "2987:0:0"
+									},
+									"scope": 103,
+									"src": "2865:123:0",
+									"stateMutability": "payable",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 82,
+										"nodeType": "StructuredDocumentation",
+										"src": "2994:60:0",
+										"text": "@notice Returns the chain selector of the current chain."
+									},
+									"functionSelector": "4e4bc847",
+									"id": 87,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "chainSelector",
+									"nameLocation": "3068:13:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 83,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "3081:2:0"
+									},
+									"returnParameters": {
+										"id": 86,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 85,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 87,
+												"src": "3107:7:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 84,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "3107:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3106:9:0"
+									},
+									"scope": 103,
+									"src": "3059:57:0",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"documentation": {
+										"id": 88,
+										"nodeType": "StructuredDocumentation",
+										"src": "3122:39:0",
+										"text": "@notice Returns the equito address."
+									},
+									"functionSelector": "2ef5c989",
+									"id": 95,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "equitoAddress",
+									"nameLocation": "3175:13:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 89,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "3188:2:0"
+									},
+									"returnParameters": {
+										"id": 94,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 91,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 95,
+												"src": "3214:7:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 90,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "3214:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 93,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 95,
+												"src": "3223:7:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 92,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "3223:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3213:18:0"
+									},
+									"scope": 103,
+									"src": "3166:66:0",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								},
+								{
+									"functionSelector": "b88c9148",
+									"id": 102,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "getFee",
+									"nameLocation": "3248:6:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 98,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 97,
+												"mutability": "mutable",
+												"name": "sender",
+												"nameLocation": "3263:6:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 102,
+												"src": "3255:14:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 96,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "3255:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3254:16:0"
+									},
+									"returnParameters": {
+										"id": 101,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 100,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 102,
+												"src": "3294:7:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 99,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "3294:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3293:9:0"
+									},
+									"scope": 103,
+									"src": "3239:64:0",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								}
+							],
+							"scope": 104,
+							"src": "262:3043:0",
+							"usedErrors": [],
+							"usedEvents": [
+								13,
+								18,
+								23,
+								28,
+								31,
+								34
+							]
+						}
+					],
+					"src": "33:3273:0"
+				},
+				"id": 0
+			},
+			"src/libraries/EquitoMessageLibrary.sol": {
+				"ast": {
+					"absolutePath": "src/libraries/EquitoMessageLibrary.sol",
+					"exportedSymbols": {
+						"EquitoMessage": [
+							133
+						],
+						"EquitoMessageLibrary": [
+							184
+						],
+						"bytes64": [
+							111
+						]
+					},
+					"id": 185,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 105,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".23"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "33:24:1"
+						},
+						{
+							"canonicalName": "bytes64",
+							"documentation": {
+								"id": 106,
+								"nodeType": "StructuredDocumentation",
+								"src": "59:212:1",
+								"text": "@title bytes64\n @notice A struct that holds two bytes32 values, used to store a 64-byte value.\n @dev Used to store 64-byte long values for the sender and receiver addresses in the EquitoMessage struct."
+							},
+							"id": 111,
+							"members": [
+								{
+									"constant": false,
+									"id": 108,
+									"mutability": "mutable",
+									"name": "lower",
+									"nameLocation": "300:5:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 111,
+									"src": "292:13:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_bytes32",
+										"typeString": "bytes32"
+									},
+									"typeName": {
+										"id": 107,
+										"name": "bytes32",
+										"nodeType": "ElementaryTypeName",
+										"src": "292:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_bytes32",
+											"typeString": "bytes32"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 110,
+									"mutability": "mutable",
+									"name": "upper",
+									"nameLocation": "319:5:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 111,
+									"src": "311:13:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_bytes32",
+										"typeString": "bytes32"
+									},
+									"typeName": {
+										"id": 109,
+										"name": "bytes32",
+										"nodeType": "ElementaryTypeName",
+										"src": "311:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_bytes32",
+											"typeString": "bytes32"
+										}
+									},
+									"visibility": "internal"
+								}
+							],
+							"name": "bytes64",
+							"nameLocation": "278:7:1",
+							"nodeType": "StructDefinition",
+							"scope": 185,
+							"src": "271:56:1",
+							"visibility": "public"
+						},
+						{
+							"canonicalName": "EquitoMessage",
+							"documentation": {
+								"id": 112,
+								"nodeType": "StructuredDocumentation",
+								"src": "329:238:1",
+								"text": "@title EquitoMessage\n @notice The ubiquitous message structure for cross-chain communication, used by the Router contract to deliver and receive messages.\n @dev Designed to be used by any chain supported by the Equito protocol."
+							},
+							"id": 133,
+							"members": [
+								{
+									"constant": false,
+									"id": 115,
+									"mutability": "mutable",
+									"name": "blockNumber",
+									"nameLocation": "664:11:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 133,
+									"src": "656:19:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint256",
+										"typeString": "uint256"
+									},
+									"typeName": {
+										"id": 114,
+										"name": "uint256",
+										"nodeType": "ElementaryTypeName",
+										"src": "656:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint256",
+											"typeString": "uint256"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 118,
+									"mutability": "mutable",
+									"name": "sourceChainSelector",
+									"nameLocation": "753:19:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 133,
+									"src": "745:27:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint256",
+										"typeString": "uint256"
+									},
+									"typeName": {
+										"id": 117,
+										"name": "uint256",
+										"nodeType": "ElementaryTypeName",
+										"src": "745:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint256",
+											"typeString": "uint256"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 122,
+									"mutability": "mutable",
+									"name": "sender",
+									"nameLocation": "825:6:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 133,
+									"src": "817:14:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_struct$_bytes64_$111_storage_ptr",
+										"typeString": "struct bytes64"
+									},
+									"typeName": {
+										"id": 121,
+										"nodeType": "UserDefinedTypeName",
+										"pathNode": {
+											"id": 120,
+											"name": "bytes64",
+											"nameLocations": [
+												"817:7:1"
+											],
+											"nodeType": "IdentifierPath",
+											"referencedDeclaration": 111,
+											"src": "817:7:1"
+										},
+										"referencedDeclaration": 111,
+										"src": "817:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_struct$_bytes64_$111_storage_ptr",
+											"typeString": "struct bytes64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 125,
+									"mutability": "mutable",
+									"name": "destinationChainSelector",
+									"nameLocation": "914:24:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 133,
+									"src": "906:32:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint256",
+										"typeString": "uint256"
+									},
+									"typeName": {
+										"id": 124,
+										"name": "uint256",
+										"nodeType": "ElementaryTypeName",
+										"src": "906:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint256",
+											"typeString": "uint256"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 129,
+									"mutability": "mutable",
+									"name": "receiver",
+									"nameLocation": "993:8:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 133,
+									"src": "985:16:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_struct$_bytes64_$111_storage_ptr",
+										"typeString": "struct bytes64"
+									},
+									"typeName": {
+										"id": 128,
+										"nodeType": "UserDefinedTypeName",
+										"pathNode": {
+											"id": 127,
+											"name": "bytes64",
+											"nameLocations": [
+												"985:7:1"
+											],
+											"nodeType": "IdentifierPath",
+											"referencedDeclaration": 111,
+											"src": "985:7:1"
+										},
+										"referencedDeclaration": 111,
+										"src": "985:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_struct$_bytes64_$111_storage_ptr",
+											"typeString": "struct bytes64"
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 132,
+									"mutability": "mutable",
+									"name": "hashedData",
+									"nameLocation": "1083:10:1",
+									"nodeType": "VariableDeclaration",
+									"scope": 133,
+									"src": "1075:18:1",
+									"stateVariable": false,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_bytes32",
+										"typeString": "bytes32"
+									},
+									"typeName": {
+										"id": 131,
+										"name": "bytes32",
+										"nodeType": "ElementaryTypeName",
+										"src": "1075:7:1",
+										"typeDescriptions": {
+											"typeIdentifier": "t_bytes32",
+											"typeString": "bytes32"
+										}
+									},
+									"visibility": "internal"
+								}
+							],
+							"name": "EquitoMessage",
+							"nameLocation": "574:13:1",
+							"nodeType": "StructDefinition",
+							"scope": 185,
+							"src": "567:529:1",
+							"visibility": "public"
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "EquitoMessageLibrary",
+							"contractDependencies": [],
+							"contractKind": "library",
+							"documentation": {
+								"id": 134,
+								"nodeType": "StructuredDocumentation",
+								"src": "1098:159:1",
+								"text": "@title EquitoMessageLibrary\n @notice Library providing helper functions for EquitoMessage struct.\n @dev Contains hashing function for EquitoMessage."
+							},
+							"fullyImplemented": true,
+							"id": 184,
+							"linearizedBaseContracts": [
+								184
+							],
+							"name": "EquitoMessageLibrary",
+							"nameLocation": "1265:20:1",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"body": {
+										"id": 160,
+										"nodeType": "Block",
+										"src": "1609:76:1",
+										"statements": [
+											{
+												"expression": {
+													"arguments": [
+														{
+															"arguments": [
+																{
+																	"arguments": [
+																		{
+																			"arguments": [
+																				{
+																					"id": 150,
+																					"name": "addr",
+																					"nodeType": "Identifier",
+																					"overloadedDeclarations": [],
+																					"referencedDeclaration": 137,
+																					"src": "1658:4:1",
+																					"typeDescriptions": {
+																						"typeIdentifier": "t_address",
+																						"typeString": "address"
+																					}
+																				}
+																			],
+																			"expression": {
+																				"argumentTypes": [
+																					{
+																						"typeIdentifier": "t_address",
+																						"typeString": "address"
+																					}
+																				],
+																				"id": 149,
+																				"isConstant": false,
+																				"isLValue": false,
+																				"isPure": true,
+																				"lValueRequested": false,
+																				"nodeType": "ElementaryTypeNameExpression",
+																				"src": "1650:7:1",
+																				"typeDescriptions": {
+																					"typeIdentifier": "t_type$_t_uint160_$",
+																					"typeString": "type(uint160)"
+																				},
+																				"typeName": {
+																					"id": 148,
+																					"name": "uint160",
+																					"nodeType": "ElementaryTypeName",
+																					"src": "1650:7:1",
+																					"typeDescriptions": {}
+																				}
+																			},
+																			"id": 151,
+																			"isConstant": false,
+																			"isLValue": false,
+																			"isPure": false,
+																			"kind": "typeConversion",
+																			"lValueRequested": false,
+																			"nameLocations": [],
+																			"names": [],
+																			"nodeType": "FunctionCall",
+																			"src": "1650:13:1",
+																			"tryCall": false,
+																			"typeDescriptions": {
+																				"typeIdentifier": "t_uint160",
+																				"typeString": "uint160"
+																			}
+																		}
+																	],
+																	"expression": {
+																		"argumentTypes": [
+																			{
+																				"typeIdentifier": "t_uint160",
+																				"typeString": "uint160"
+																			}
+																		],
+																		"id": 147,
+																		"isConstant": false,
+																		"isLValue": false,
+																		"isPure": true,
+																		"lValueRequested": false,
+																		"nodeType": "ElementaryTypeNameExpression",
+																		"src": "1642:7:1",
+																		"typeDescriptions": {
+																			"typeIdentifier": "t_type$_t_uint256_$",
+																			"typeString": "type(uint256)"
+																		},
+																		"typeName": {
+																			"id": 146,
+																			"name": "uint256",
+																			"nodeType": "ElementaryTypeName",
+																			"src": "1642:7:1",
+																			"typeDescriptions": {}
+																		}
+																	},
+																	"id": 152,
+																	"isConstant": false,
+																	"isLValue": false,
+																	"isPure": false,
+																	"kind": "typeConversion",
+																	"lValueRequested": false,
+																	"nameLocations": [],
+																	"names": [],
+																	"nodeType": "FunctionCall",
+																	"src": "1642:22:1",
+																	"tryCall": false,
+																	"typeDescriptions": {
+																		"typeIdentifier": "t_uint256",
+																		"typeString": "uint256"
+																	}
+																}
+															],
+															"expression": {
+																"argumentTypes": [
+																	{
+																		"typeIdentifier": "t_uint256",
+																		"typeString": "uint256"
+																	}
+																],
+																"id": 145,
+																"isConstant": false,
+																"isLValue": false,
+																"isPure": true,
+																"lValueRequested": false,
+																"nodeType": "ElementaryTypeNameExpression",
+																"src": "1634:7:1",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_type$_t_bytes32_$",
+																	"typeString": "type(bytes32)"
+																},
+																"typeName": {
+																	"id": 144,
+																	"name": "bytes32",
+																	"nodeType": "ElementaryTypeName",
+																	"src": "1634:7:1",
+																	"typeDescriptions": {}
+																}
+															},
+															"id": 153,
+															"isConstant": false,
+															"isLValue": false,
+															"isPure": false,
+															"kind": "typeConversion",
+															"lValueRequested": false,
+															"nameLocations": [],
+															"names": [],
+															"nodeType": "FunctionCall",
+															"src": "1634:31:1",
+															"tryCall": false,
+															"typeDescriptions": {
+																"typeIdentifier": "t_bytes32",
+																"typeString": "bytes32"
+															}
+														},
+														{
+															"arguments": [
+																{
+																	"hexValue": "30",
+																	"id": 156,
+																	"isConstant": false,
+																	"isLValue": false,
+																	"isPure": true,
+																	"kind": "number",
+																	"lValueRequested": false,
+																	"nodeType": "Literal",
+																	"src": "1675:1:1",
+																	"typeDescriptions": {
+																		"typeIdentifier": "t_rational_0_by_1",
+																		"typeString": "int_const 0"
+																	},
+																	"value": "0"
+																}
+															],
+															"expression": {
+																"argumentTypes": [
+																	{
+																		"typeIdentifier": "t_rational_0_by_1",
+																		"typeString": "int_const 0"
+																	}
+																],
+																"id": 155,
+																"isConstant": false,
+																"isLValue": false,
+																"isPure": true,
+																"lValueRequested": false,
+																"nodeType": "ElementaryTypeNameExpression",
+																"src": "1667:7:1",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_type$_t_bytes32_$",
+																	"typeString": "type(bytes32)"
+																},
+																"typeName": {
+																	"id": 154,
+																	"name": "bytes32",
+																	"nodeType": "ElementaryTypeName",
+																	"src": "1667:7:1",
+																	"typeDescriptions": {}
+																}
+															},
+															"id": 157,
+															"isConstant": false,
+															"isLValue": false,
+															"isPure": true,
+															"kind": "typeConversion",
+															"lValueRequested": false,
+															"nameLocations": [],
+															"names": [],
+															"nodeType": "FunctionCall",
+															"src": "1667:10:1",
+															"tryCall": false,
+															"typeDescriptions": {
+																"typeIdentifier": "t_bytes32",
+																"typeString": "bytes32"
+															}
+														}
+													],
+													"expression": {
+														"argumentTypes": [
+															{
+																"typeIdentifier": "t_bytes32",
+																"typeString": "bytes32"
+															},
+															{
+																"typeIdentifier": "t_bytes32",
+																"typeString": "bytes32"
+															}
+														],
+														"id": 143,
+														"name": "bytes64",
+														"nodeType": "Identifier",
+														"overloadedDeclarations": [],
+														"referencedDeclaration": 111,
+														"src": "1626:7:1",
+														"typeDescriptions": {
+															"typeIdentifier": "t_type$_t_struct$_bytes64_$111_storage_ptr_$",
+															"typeString": "type(struct bytes64 storage pointer)"
+														}
+													},
+													"id": 158,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"kind": "structConstructorCall",
+													"lValueRequested": false,
+													"nameLocations": [],
+													"names": [],
+													"nodeType": "FunctionCall",
+													"src": "1626:52:1",
+													"tryCall": false,
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_bytes64_$111_memory_ptr",
+														"typeString": "struct bytes64 memory"
+													}
+												},
+												"functionReturnParameters": 142,
+												"id": 159,
+												"nodeType": "Return",
+												"src": "1619:59:1"
+											}
+										]
+									},
+									"documentation": {
+										"id": 135,
+										"nodeType": "StructuredDocumentation",
+										"src": "1292:233:1",
+										"text": "@notice Converts an address to a bytes64 struct.\n @param addr The address to convert.\n @return The bytes64 struct containing the address.\n @dev The upper bytes32 value is set to 0. This operation cannot fail."
+									},
+									"id": 161,
+									"implemented": true,
+									"kind": "function",
+									"modifiers": [],
+									"name": "addressToBytes64",
+									"nameLocation": "1539:16:1",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 138,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 137,
+												"mutability": "mutable",
+												"name": "addr",
+												"nameLocation": "1564:4:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 161,
+												"src": "1556:12:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 136,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "1556:7:1",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1555:14:1"
+									},
+									"returnParameters": {
+										"id": 142,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 141,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 161,
+												"src": "1593:14:1",
+												"stateVariable": false,
+												"storageLocation": "memory",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_bytes64_$111_memory_ptr",
+													"typeString": "struct bytes64"
+												},
+												"typeName": {
+													"id": 140,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 139,
+														"name": "bytes64",
+														"nameLocations": [
+															"1593:7:1"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 111,
+														"src": "1593:7:1"
+													},
+													"referencedDeclaration": 111,
+													"src": "1593:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_bytes64_$111_storage_ptr",
+														"typeString": "struct bytes64"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1592:16:1"
+									},
+									"scope": 184,
+									"src": "1530:155:1",
+									"stateMutability": "pure",
+									"virtual": false,
+									"visibility": "internal"
+								},
+								{
+									"body": {
+										"id": 182,
+										"nodeType": "Block",
+										"src": "2030:60:1",
+										"statements": [
+											{
+												"expression": {
+													"arguments": [
+														{
+															"arguments": [
+																{
+																	"arguments": [
+																		{
+																			"expression": {
+																				"id": 176,
+																				"name": "b64",
+																				"nodeType": "Identifier",
+																				"overloadedDeclarations": [],
+																				"referencedDeclaration": 165,
+																				"src": "2071:3:1",
+																				"typeDescriptions": {
+																					"typeIdentifier": "t_struct$_bytes64_$111_memory_ptr",
+																					"typeString": "struct bytes64 memory"
+																				}
+																			},
+																			"id": 177,
+																			"isConstant": false,
+																			"isLValue": true,
+																			"isPure": false,
+																			"lValueRequested": false,
+																			"memberLocation": "2075:5:1",
+																			"memberName": "lower",
+																			"nodeType": "MemberAccess",
+																			"referencedDeclaration": 108,
+																			"src": "2071:9:1",
+																			"typeDescriptions": {
+																				"typeIdentifier": "t_bytes32",
+																				"typeString": "bytes32"
+																			}
+																		}
+																	],
+																	"expression": {
+																		"argumentTypes": [
+																			{
+																				"typeIdentifier": "t_bytes32",
+																				"typeString": "bytes32"
+																			}
+																		],
+																		"id": 175,
+																		"isConstant": false,
+																		"isLValue": false,
+																		"isPure": true,
+																		"lValueRequested": false,
+																		"nodeType": "ElementaryTypeNameExpression",
+																		"src": "2063:7:1",
+																		"typeDescriptions": {
+																			"typeIdentifier": "t_type$_t_uint256_$",
+																			"typeString": "type(uint256)"
+																		},
+																		"typeName": {
+																			"id": 174,
+																			"name": "uint256",
+																			"nodeType": "ElementaryTypeName",
+																			"src": "2063:7:1",
+																			"typeDescriptions": {}
+																		}
+																	},
+																	"id": 178,
+																	"isConstant": false,
+																	"isLValue": false,
+																	"isPure": false,
+																	"kind": "typeConversion",
+																	"lValueRequested": false,
+																	"nameLocations": [],
+																	"names": [],
+																	"nodeType": "FunctionCall",
+																	"src": "2063:18:1",
+																	"tryCall": false,
+																	"typeDescriptions": {
+																		"typeIdentifier": "t_uint256",
+																		"typeString": "uint256"
+																	}
+																}
+															],
+															"expression": {
+																"argumentTypes": [
+																	{
+																		"typeIdentifier": "t_uint256",
+																		"typeString": "uint256"
+																	}
+																],
+																"id": 173,
+																"isConstant": false,
+																"isLValue": false,
+																"isPure": true,
+																"lValueRequested": false,
+																"nodeType": "ElementaryTypeNameExpression",
+																"src": "2055:7:1",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_type$_t_uint160_$",
+																	"typeString": "type(uint160)"
+																},
+																"typeName": {
+																	"id": 172,
+																	"name": "uint160",
+																	"nodeType": "ElementaryTypeName",
+																	"src": "2055:7:1",
+																	"typeDescriptions": {}
+																}
+															},
+															"id": 179,
+															"isConstant": false,
+															"isLValue": false,
+															"isPure": false,
+															"kind": "typeConversion",
+															"lValueRequested": false,
+															"nameLocations": [],
+															"names": [],
+															"nodeType": "FunctionCall",
+															"src": "2055:27:1",
+															"tryCall": false,
+															"typeDescriptions": {
+																"typeIdentifier": "t_uint160",
+																"typeString": "uint160"
+															}
+														}
+													],
+													"expression": {
+														"argumentTypes": [
+															{
+																"typeIdentifier": "t_uint160",
+																"typeString": "uint160"
+															}
+														],
+														"id": 171,
+														"isConstant": false,
+														"isLValue": false,
+														"isPure": true,
+														"lValueRequested": false,
+														"nodeType": "ElementaryTypeNameExpression",
+														"src": "2047:7:1",
+														"typeDescriptions": {
+															"typeIdentifier": "t_type$_t_address_$",
+															"typeString": "type(address)"
+														},
+														"typeName": {
+															"id": 170,
+															"name": "address",
+															"nodeType": "ElementaryTypeName",
+															"src": "2047:7:1",
+															"typeDescriptions": {}
+														}
+													},
+													"id": 180,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"kind": "typeConversion",
+													"lValueRequested": false,
+													"nameLocations": [],
+													"names": [],
+													"nodeType": "FunctionCall",
+													"src": "2047:36:1",
+													"tryCall": false,
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"functionReturnParameters": 169,
+												"id": 181,
+												"nodeType": "Return",
+												"src": "2040:43:1"
+											}
+										]
+									},
+									"documentation": {
+										"id": 162,
+										"nodeType": "StructuredDocumentation",
+										"src": "1691:256:1",
+										"text": "@notice Converts a bytes64 struct to an address.\n @param b64 The bytes64 struct to convert.\n @return The address contained in the bytes64 struct's lower bytes32.\n @dev The upper bytes32 value is ignored. This operation cannot fail."
+									},
+									"id": 183,
+									"implemented": true,
+									"kind": "function",
+									"modifiers": [],
+									"name": "bytes64ToAddress",
+									"nameLocation": "1961:16:1",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 166,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 165,
+												"mutability": "mutable",
+												"name": "b64",
+												"nameLocation": "1993:3:1",
+												"nodeType": "VariableDeclaration",
+												"scope": 183,
+												"src": "1978:18:1",
+												"stateVariable": false,
+												"storageLocation": "memory",
+												"typeDescriptions": {
+													"typeIdentifier": "t_struct$_bytes64_$111_memory_ptr",
+													"typeString": "struct bytes64"
+												},
+												"typeName": {
+													"id": 164,
+													"nodeType": "UserDefinedTypeName",
+													"pathNode": {
+														"id": 163,
+														"name": "bytes64",
+														"nameLocations": [
+															"1978:7:1"
+														],
+														"nodeType": "IdentifierPath",
+														"referencedDeclaration": 111,
+														"src": "1978:7:1"
+													},
+													"referencedDeclaration": 111,
+													"src": "1978:7:1",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_bytes64_$111_storage_ptr",
+														"typeString": "struct bytes64"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1977:20:1"
+									},
+									"returnParameters": {
+										"id": 169,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 168,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 183,
+												"src": "2021:7:1",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 167,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "2021:7:1",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "2020:9:1"
+									},
+									"scope": 184,
+									"src": "1952:138:1",
+									"stateMutability": "pure",
+									"virtual": false,
+									"visibility": "internal"
+								}
+							],
+							"scope": 185,
+							"src": "1257:835:1",
+							"usedErrors": [],
+							"usedEvents": []
+						}
+					],
+					"src": "33:2060:1"
+				},
+				"id": 1
+			}
+		}
+	}
+}

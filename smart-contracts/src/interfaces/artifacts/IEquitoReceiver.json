@@ -1,0 +1,131 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"receiveMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": "879d182d"
+		}
+	},
+	"abi": [
+		{
+			"inputs": [
+				{
+					"components": [
+						{
+							"internalType": "uint256",
+							"name": "blockNumber",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "sourceChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "sender",
+							"type": "tuple"
+						},
+						{
+							"internalType": "uint256",
+							"name": "destinationChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "receiver",
+							"type": "tuple"
+						},
+						{
+							"internalType": "bytes32",
+							"name": "hashedData",
+							"type": "bytes32"
+						}
+					],
+					"internalType": "struct EquitoMessage",
+					"name": "message",
+					"type": "tuple"
+				},
+				{
+					"internalType": "bytes",
+					"name": "messageData",
+					"type": "bytes"
+				}
+			],
+			"name": "receiveMessage",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		}
+	]
+}

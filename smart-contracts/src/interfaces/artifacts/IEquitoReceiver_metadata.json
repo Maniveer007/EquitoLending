@@ -1,0 +1,141 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "blockNumber",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "sourceChainSelector",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "bytes32",
+										"name": "lower",
+										"type": "bytes32"
+									},
+									{
+										"internalType": "bytes32",
+										"name": "upper",
+										"type": "bytes32"
+									}
+								],
+								"internalType": "struct bytes64",
+								"name": "sender",
+								"type": "tuple"
+							},
+							{
+								"internalType": "uint256",
+								"name": "destinationChainSelector",
+								"type": "uint256"
+							},
+							{
+								"components": [
+									{
+										"internalType": "bytes32",
+										"name": "lower",
+										"type": "bytes32"
+									},
+									{
+										"internalType": "bytes32",
+										"name": "upper",
+										"type": "bytes32"
+									}
+								],
+								"internalType": "struct bytes64",
+								"name": "receiver",
+								"type": "tuple"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "hashedData",
+								"type": "bytes32"
+							}
+						],
+						"internalType": "struct EquitoMessage",
+						"name": "message",
+						"type": "tuple"
+					},
+					{
+						"internalType": "bytes",
+						"name": "messageData",
+						"type": "bytes"
+					}
+				],
+				"name": "receiveMessage",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"receiveMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+					"params": {
+						"message": "The Equito message received.",
+						"messageData": "The data of the message."
+					}
+				}
+			},
+			"title": "IEquitoReceiver",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"receiveMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": {
+					"notice": "Receives a cross-chain message from the Router contract."
+				}
+			},
+			"notice": "Interface for contracts that can receive cross-chain messages via the Router contract.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/interfaces/IEquitoReceiver.sol": "IEquitoReceiver"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"src/interfaces/IEquitoReceiver.sol": {
+			"keccak256": "0xb64ed59be348f84a82cc89f4a817ead53b2aa196786e8af9e7459bddcdf6b448",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8c2e5787b6f15ff5dcb8dec914377f5cd50a4a585ef17aff4a7563b206795349",
+				"dweb:/ipfs/QmVFwhmUGLvmLhbbzsN1GKRiPif46us47151PAXox4ACyp"
+			]
+		},
+		"src/libraries/EquitoMessageLibrary.sol": {
+			"keccak256": "0xcc07267aa6af97e9bb238f44c3d8ec262916625c9a1a8e2510e15e4b6c1d5552",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://47dd6eb755eaf0fef51d4682cc1297d0da980e3134cc993fc760ecbf42be4d1a",
+				"dweb:/ipfs/QmP2YL7KRMw1UhJtvss86HMKiQtqLY7YEGN98GfzSqEEjw"
+			]
+		}
+	},
+	"version": 1
+}

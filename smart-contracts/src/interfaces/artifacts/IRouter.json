@@ -1,0 +1,517 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "",
+			"opcodes": "",
+			"sourceMap": ""
+		},
+		"gasEstimates": null,
+		"methodIdentifiers": {
+			"chainSelector()": "4e4bc847",
+			"deliverAndExecuteMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes,uint256,bytes)": "f0a5704a",
+			"deliverMessages((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32)[],uint256,bytes)": "71c67f3a",
+			"equitoAddress()": "2ef5c989",
+			"executeMessage((uint256,uint256,(bytes32,bytes32),uint256,(bytes32,bytes32),bytes32),bytes)": "27d951e9",
+			"getFee(address)": "b88c9148",
+			"sendMessage((bytes32,bytes32),uint256,bytes)": "dc203137"
+		}
+	},
+	"abi": [
+		{
+			"anonymous": false,
+			"inputs": [],
+			"name": "EquitoAddressSet",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [],
+			"name": "EquitoFeesSet",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "bytes32",
+					"name": "messageHash",
+					"type": "bytes32"
+				}
+			],
+			"name": "MessageDelivered",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": false,
+					"internalType": "bytes32",
+					"name": "messageHash",
+					"type": "bytes32"
+				}
+			],
+			"name": "MessageExecuted",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"components": [
+						{
+							"internalType": "uint256",
+							"name": "blockNumber",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "sourceChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "sender",
+							"type": "tuple"
+						},
+						{
+							"internalType": "uint256",
+							"name": "destinationChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "receiver",
+							"type": "tuple"
+						},
+						{
+							"internalType": "bytes32",
+							"name": "hashedData",
+							"type": "bytes32"
+						}
+					],
+					"indexed": false,
+					"internalType": "struct EquitoMessage",
+					"name": "message",
+					"type": "tuple"
+				},
+				{
+					"indexed": false,
+					"internalType": "bytes",
+					"name": "messageData",
+					"type": "bytes"
+				}
+			],
+			"name": "MessageSendRequested",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "verifier",
+					"type": "address"
+				}
+			],
+			"name": "VerifierAdded",
+			"type": "event"
+		},
+		{
+			"inputs": [],
+			"name": "chainSelector",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"components": [
+						{
+							"internalType": "uint256",
+							"name": "blockNumber",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "sourceChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "sender",
+							"type": "tuple"
+						},
+						{
+							"internalType": "uint256",
+							"name": "destinationChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "receiver",
+							"type": "tuple"
+						},
+						{
+							"internalType": "bytes32",
+							"name": "hashedData",
+							"type": "bytes32"
+						}
+					],
+					"internalType": "struct EquitoMessage",
+					"name": "message",
+					"type": "tuple"
+				},
+				{
+					"internalType": "bytes",
+					"name": "messageData",
+					"type": "bytes"
+				},
+				{
+					"internalType": "uint256",
+					"name": "verifierIndex",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "proof",
+					"type": "bytes"
+				}
+			],
+			"name": "deliverAndExecuteMessage",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"components": [
+						{
+							"internalType": "uint256",
+							"name": "blockNumber",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "sourceChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "sender",
+							"type": "tuple"
+						},
+						{
+							"internalType": "uint256",
+							"name": "destinationChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "receiver",
+							"type": "tuple"
+						},
+						{
+							"internalType": "bytes32",
+							"name": "hashedData",
+							"type": "bytes32"
+						}
+					],
+					"internalType": "struct EquitoMessage[]",
+					"name": "messages",
+					"type": "tuple[]"
+				},
+				{
+					"internalType": "uint256",
+					"name": "verifierIndex",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "proof",
+					"type": "bytes"
+				}
+			],
+			"name": "deliverMessages",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "equitoAddress",
+			"outputs": [
+				{
+					"internalType": "bytes32",
+					"name": "",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "",
+					"type": "bytes32"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"components": [
+						{
+							"internalType": "uint256",
+							"name": "blockNumber",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "sourceChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "sender",
+							"type": "tuple"
+						},
+						{
+							"internalType": "uint256",
+							"name": "destinationChainSelector",
+							"type": "uint256"
+						},
+						{
+							"components": [
+								{
+									"internalType": "bytes32",
+									"name": "lower",
+									"type": "bytes32"
+								},
+								{
+									"internalType": "bytes32",
+									"name": "upper",
+									"type": "bytes32"
+								}
+							],
+							"internalType": "struct bytes64",
+							"name": "receiver",
+							"type": "tuple"
+						},
+						{
+							"internalType": "bytes32",
+							"name": "hashedData",
+							"type": "bytes32"
+						}
+					],
+					"internalType": "struct EquitoMessage",
+					"name": "message",
+					"type": "tuple"
+				},
+				{
+					"internalType": "bytes",
+					"name": "messageData",
+					"type": "bytes"
+				}
+			],
+			"name": "executeMessage",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				}
+			],
+			"name": "getFee",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"components": [
+						{
+							"internalType": "bytes32",
+							"name": "lower",
+							"type": "bytes32"
+						},
+						{
+							"internalType": "bytes32",
+							"name": "upper",
+							"type": "bytes32"
+						}
+					],
+					"internalType": "struct bytes64",
+					"name": "receiver",
+					"type": "tuple"
+				},
+				{
+					"internalType": "uint256",
+					"name": "destinationChainSelector",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes",
+					"name": "data",
+					"type": "bytes"
+				}
+			],
+			"name": "sendMessage",
+			"outputs": [
+				{
+					"internalType": "bytes32",
+					"name": "",
+					"type": "bytes32"
+				}
+			],
+			"stateMutability": "payable",
+			"type": "function"
+		}
+	]
+}
