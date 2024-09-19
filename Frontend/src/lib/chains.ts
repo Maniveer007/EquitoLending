@@ -1,68 +1,68 @@
 import {
   sepolia,
-  bscTestnet,
-  polygonAmoy,
-  arbitrumSepolia,
-  avalancheFuji,
-  optimismSepolia,
-  baseSepolia,
-  fantomTestnet,
-  celoAlfajores,
-  mantleSepoliaTestnet,
-  rolluxTestnet,
-  lineaSepolia,
+  // bscTestnet,
+  // polygonAmoy,
+  // arbitrumSepolia,
+  // avalancheFuji,
+  // optimismSepolia,
+  // baseSepolia,
+  // fantomTestnet,
+  // celoAlfajores,
+  // mantleSepoliaTestnet,
+  // rolluxTestnet,
+  // lineaSepolia,
   blastSepolia,
-  gnosisChiado,
-  opBNBTestnet,
-  telosTestnet,
-  scrollSepolia,
+  // gnosisChiado,
+  // opBNBTestnet,
+  // telosTestnet,
+  // scrollSepolia,
 } from "wagmi/chains";
 import { Address, type Chain as Definition } from "viem";
 
-const seiEvmAtlantic: Definition = {
-  id: 1328,
-  name: "Sei Atlantic",
-  nativeCurrency: {
-    decimals: 18,
-    name: "SEI",
-    symbol: "SEI",
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://evm-rpc-testnet.sei-apis.com"],
-    },
-  },
-};
+// const seiEvmAtlantic: Definition = {
+//   id: 1328,
+//   name: "Sei Atlantic",
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: "SEI",
+//     symbol: "SEI",
+//   },
+//   rpcUrls: {
+//     default: {
+//       http: ["https://evm-rpc-testnet.sei-apis.com"],
+//     },
+//   },
+// };
 
-const merlinTestnet: Definition = {
-  id: 686868,
-  name: "Merlin Testnet",
-  nativeCurrency: {
-    decimals: 18,
-    name: "BTC",
-    symbol: "BTC",
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://testnet-rpc.merlinchain.io"],
-    },
-  },
-};
+// const merlinTestnet: Definition = {
+//   id: 686868,
+//   name: "Merlin Testnet",
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: "BTC",
+//     symbol: "BTC",
+//   },
+//   rpcUrls: {
+//     default: {
+//       http: ["https://testnet-rpc.merlinchain.io"],
+//     },
+//   },
+// };
 
-const oasisEmeraldTestnet: Definition = {
-  id: 42261,
-  name: "Oasis Emerald Testnet",
-  nativeCurrency: {
-    decimals: 18,
-    name: "ROSE",
-    symbol: "ROSE",
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://testnet.emerald.oasis.dev"],
-    },
-  },
-};
+// const oasisEmeraldTestnet: Definition = {
+//   id: 42261,
+//   name: "Oasis Emerald Testnet",
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: "ROSE",
+//     symbol: "ROSE",
+//   },
+//   rpcUrls: {
+//     default: {
+//       http: ["https://testnet.emerald.oasis.dev"],
+//     },
+//   },
+// };
 
 export const chains: Chain[] = [
   {
@@ -70,7 +70,8 @@ export const chains: Chain[] = [
     name: "Ethereum Sepolia",
     img: 1027,
     definition: sepolia,
-    pingPongContract: "0x2BA6E972739670dA840F1393F321f524D24DA079",
+    LendingContract: "0x17cc47F4727C46CCfa7c4C19B18f0cb5b73603D2",
+    RouterContract: "0x35D899517F07b1026e36F6418c53BC1305dCA5a5",
   },
   // {
   //   chainSelector: 1002,
@@ -79,13 +80,14 @@ export const chains: Chain[] = [
   //   definition: bscTestnet,
   //   pingPongContract: "0xe2f05B08e9CF9278cc331376DCC184991B956Cfa",
   // },
-  {
-    chainSelector: 1003,
-    name: "Polygon Amoy",
-    img: 3890,
-    definition: polygonAmoy,
-    pingPongContract: "0x79c440ABA2bB23D44fEB21bF1Cc6a37E0657E7Fd",
-  },
+  // {
+  //   chainSelector: 1003,
+  //   name: "Polygon Amoy",
+  //   img: 3890,
+  //   definition: polygonAmoy,
+  //   LendingContract: "0x79c440ABA2bB23D44fEB21bF1Cc6a37E0657E7Fd",
+  //   RouterContract: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  // },
   // {
   //   chainSelector: 1004,
   //   name: "Arbitrum Sepolia",
@@ -175,7 +177,8 @@ export const chains: Chain[] = [
     name: "Blast Sepolia",
     img: 28480,
     definition: blastSepolia,
-    pingPongContract: "0xc97c952D2ec7cF359F4848bFD4eb90303F5Fe631",
+    LendingContract: "0xCC548d25BF2E4908Ba0CA6546F4DA3949b1BB05B",
+    RouterContract: "0x496883645073B0e10C0D200C4f860024118C5e86",
   },
   // {
   //   chainSelector: 1019,
@@ -212,7 +215,8 @@ export type Chain = {
   name: string;
   img: number;
   definition: Definition;
-  pingPongContract: Address;
+  LendingContract?: Address;
+  RouterContract?: Address;
 };
 
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";

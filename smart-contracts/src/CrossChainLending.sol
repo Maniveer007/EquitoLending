@@ -10,8 +10,8 @@ import {Errors} from "./libraries/Errors.sol";
 import {EquitoMessageLibrary} from "./libraries/EquitoMessageLibrary.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-/// @title CrossChainSwap
-/// @notice This contract facilitates token swaps between different blockchains using the Equito protocol.
+/// @title CrossChainLending
+/// @notice This contract facilitates token lending between different blockchains using the Equito protocol.
 contract CrossChainLending is EquitoApp {
     
     
@@ -20,13 +20,13 @@ contract CrossChainLending is EquitoApp {
     event BorrowRequested(address user, bytes32 messageHash);
 
     /// @notice MAXIMUM Collateral ratio of the user collateral to the Borrow ammount.
-    uint256 immutable COLLATERAL_RATIO;
+    uint256 immutable COLLATERAL_RATIO = 60;
 
     /// @notice LIQUIDATION_RATIO if the loan amount cross this ratio loan can be liquidated.
-    uint256 immutable LIQUIDATION_RATIO;
+    uint256 immutable LIQUIDATION_RATIO = 90;
 
     /// @notice FEES in percentage for every 30 days.
-    uint256 immutable FEES_IN_PERCENTAGE_PER_30_DAYS; 
+    uint256 immutable FEES_IN_PERCENTAGE_PER_30_DAYS = 1; 
     
     /// @dev The address used to represent the native token.
     address internal constant NATIVE_TOKEN =
@@ -45,10 +45,7 @@ contract CrossChainLending is EquitoApp {
     /// @dev the second key is user address
     mapping(uint256 => mapping(address => Borrow)) public _userBorrow;
 
-    constructor(address _router , uint256 _collateral , uint256 _fees) payable EquitoApp(_router) {
-        COLLATERAL_RATIO = _collateral;
-        FEES_IN_PERCENTAGE_PER_30_DAYS = _fees;
-    }
+    constructor(address _router ) payable EquitoApp(_router) {}
  
     /// @notice Struct to store Borrow information.
     /// @param User The address of User requested Borrow.
@@ -61,7 +58,7 @@ contract CrossChainLending is EquitoApp {
         bytes64 User;
         uint256 LoanAmount; 
         uint256 sourceChainSelector;
-        uint256 destiantionChainSelector;
+        uint256 destinationChainSelector;
         address destinationChainToken;
         uint256 StartTime;
     }
@@ -70,8 +67,8 @@ contract CrossChainLending is EquitoApp {
         EquitoMessage calldata message, 
         bytes calldata messageData
     ) internal override {
-        (string memory messageType , Borrow memory borrow ) = abi.decode(messageData , (string , Borrow));  
-        if(keccak256(bytes(messageType)) == keccak256(bytes("BorrowRequesting"))){
+        (bytes1 operationID , Borrow memory borrow ) = abi.decode(messageData , (bytes1 , Borrow));  
+        if ( operationID == 0x01 ){
 
             _userBorrow[message.sourceChainSelector]
                 [EquitoMessageLibrary.bytes64ToAddress(borrow.User)] = borrow;
@@ -81,11 +78,10 @@ contract CrossChainLending is EquitoApp {
         }else{
             TransferHelper.safeTransfer(borrow.destinationChainToken,EquitoMessageLibrary.bytes64ToAddress(borrow.User),borrow.LoanAmount);
         } 
-        }else if (keccak256(bytes(messageType)) == keccak256(bytes("repayBorrowedAmount"))){
-            require(borrow.sourceChainSelector == router.chainSelector(),"This is not the Source chain of the loan");
+        } else if (operationID == 0x02){
             delete _userBorrow[router.chainSelector()][EquitoMessageLibrary.bytes64ToAddress(borrow.User)];
         }
-        else if (keccak256(bytes(messageType)) == keccak256(bytes("Liquidate-Loan"))){
+        else if (operationID == 0x03){
             delete _userBorrow[router.chainSelector()][EquitoMessageLibrary.bytes64ToAddress(borrow.User)];
         }
 
@@ -101,7 +97,7 @@ contract CrossChainLending is EquitoApp {
         address destinationChainToken
         ) public payable {
         
-        require(_userBorrow[router.chainSelector()][msg.sender].LoanAmount == 0,"User already has a loan");
+        // require(_userBorrow[router.chainSelector()][msg.sender].LoanAmount == 0,"User already has a loan");
         require(calculateDestinationMaximumBorrowAmount(msg.sender,destinationChainSelector,destinationChainToken) >= _amount,
         "user cannot withdraw greater than their max borrow amount");
 
@@ -115,8 +111,8 @@ contract CrossChainLending is EquitoApp {
         );
 
         _userBorrow[router.chainSelector()][msg.sender] = borrow;
-
-        bytes memory data = abi.encode("BorrowRequesting", borrow);
+        bytes1 operationID = 0x01;
+        bytes memory data = abi.encode( operationID , borrow);
         bytes32 messageHash = router.sendMessage{value: msg.value}(
             getPeer(destinationChainSelector),
             destinationChainSelector,
@@ -125,10 +121,11 @@ contract CrossChainLending is EquitoApp {
 
         emit BorrowRequested( msg.sender , messageHash );
     }
-
+    /// @notice repayBorrowedAmount will repay the borrowed amount on sourcechain
     function repayBorrowedAmount (uint256 sourceChainSelectorOfLoan ,address token) public payable {
+        bytes1 operationID = 0x02;
         
-        bytes memory data = abi.encode("repayBorrowedAmount" , _userBorrow[sourceChainSelectorOfLoan][msg.sender]);
+        bytes memory data = abi.encode( operationID , _userBorrow[sourceChainSelectorOfLoan][msg.sender]);
 
         bytes32 messageHash = router.sendMessage {value : router.getFee(address(this))}
         (
@@ -148,46 +145,62 @@ contract CrossChainLending is EquitoApp {
         }
     }
 
-
+    /// @notice liquidate this will liquidate loans which exceeded liquidation ratio
     function liquidate(address user ) public payable {
-        require(HealthFactor(user)>90,"USER Loan is not Liquidatable");
+        require(HealthFactor(user)>LIQUIDATION_RATIO,"USER Loan is not Liquidatable");
 
         delete _userBorrow[router.chainSelector()][user];
         _balances[msg.sender] = _balances[user];
         _balances[user] = 0;
 
-        bytes memory data = abi.encode("Liquidate-Loan" , _userBorrow[router.chainSelector()][msg.sender]);
+        bytes1 operationID = 0x03;
+        bytes memory data = abi.encode( operationID , _userBorrow[router.chainSelector()][msg.sender]);
 
         bytes32 messageHash = router.sendMessage {value : router.getFee(address(this))}
         (
-         getPeer(_userBorrow[router.chainSelector()][user].destiantionChainSelector),
-         _userBorrow[router.chainSelector()][user].destiantionChainSelector,
+         getPeer(_userBorrow[router.chainSelector()][user].destinationChainSelector),
+         _userBorrow[router.chainSelector()][user].destinationChainSelector,
          data
         );
     }
 
-
+    /// @notice calculateRepaymentAmount calculates amount to be repayed on destination chain
     function calculateRepaymentAmount(address user ,uint256 sourceChainSelectorOfLoan)public view returns (uint256){
         Borrow memory borrow = _userBorrow[sourceChainSelectorOfLoan][user];
 
         return borrow.LoanAmount + (borrow.LoanAmount * FEES_IN_PERCENTAGE_PER_30_DAYS * ((block.timestamp - borrow.StartTime) / 30 days ) /100);
     }
 
+    /// @notice calculateDestinationMaximumBorrowAmount calculates maximum amount which can be borrowed on destination chain
     function calculateDestinationMaximumBorrowAmount(
         address user,
         uint256 destinationChainSelector,
         address destinationChainToken
     ) public view returns (uint256) {
         return
-            (_balances[user] * _tokenPrice[router.chainSelector()][NATIVE_TOKEN] *COLLATERAL_RATIO) /
+            (_balances[user] * _tokenPrice[router.chainSelector()][NATIVE_TOKEN] * COLLATERAL_RATIO) /
             (_tokenPrice[destinationChainSelector][destinationChainToken] * 100);
     }
 
-    function setSwapAddress(
+    /// @notice this gives back user their collateral
+    function getCollateralBack() public {
+        require(_userBorrow[router.chainSelector()][msg.sender].LoanAmount == 0,"user is having a loan which is to be repayed");
+        // Anti Reentrancy attack
+        uint amount = _balances[msg.sender];
+        delete _balances[msg.sender];
+        payable(msg.sender).transfer(amount);
+    }
+    
+
+    function setLendingAddress(
         uint256[] calldata chainSelectors,
-        bytes64[] calldata swapAddresses
+        address[] calldata swapAddresses
     ) external onlyOwner {
-        _setPeers(chainSelectors, swapAddresses);
+        bytes64[] memory Address64 = new bytes64[](chainSelectors.length);
+        for(uint i = 0; i<chainSelectors.length ;i++){
+            Address64[i] = EquitoMessageLibrary.addressToBytes64(swapAddresses[i]);
+        }
+        _setPeers(chainSelectors, Address64);
     }
 
 
@@ -210,15 +223,14 @@ contract CrossChainLending is EquitoApp {
         require(borrow.sourceChainSelector == router.chainSelector()
             ,"User is Not Taken Loan On This Account");
             /*
-                loan amount on destination chain
+                repayment amount on destination chain
             ________________________________________  x 100
 
                 collateral amount on destination chain 
             */
         return (
-            (borrow.LoanAmount * 100)
-            / ((_balances[user] * _tokenPrice[borrow.destiantionChainSelector][borrow.destinationChainToken]) 
-                /   _tokenPrice[router.chainSelector()][NATIVE_TOKEN]) 
+            (calculateRepaymentAmount(user, router.chainSelector()) * 100) / 
+            (calculateAmountonDestinationChain(_balances[user], borrow.destinationChainSelector, borrow.destinationChainToken))
         );
 
     }
@@ -227,11 +239,30 @@ contract CrossChainLending is EquitoApp {
         _balances[msg.sender] += msg.value;
     }
 
+    function calculateAmountonDestinationChain( uint256 amount, uint destinationChainSelector, address destinationChainToken ) public view returns(uint256){
+        return (( amount * _tokenPrice[destinationChainSelector][destinationChainToken]) 
+                /   _tokenPrice[router.chainSelector()][NATIVE_TOKEN]) ;
+    }
+
     receive() external payable {
         _balances[msg.sender] += msg.value; 
     }
 
-    function testHealthFactor(uint loan , uint collateral) public pure returns(uint){
-        return loan * 100 / collateral;
+    function getBalance() public view returns(uint256){
+        return address(this).balance;
+    }
+
+
+
+    function withdraw() public {
+        payable(msg.sender).transfer(address(this).balance);
     }
 }
+
+
+
+
+
+
+
+

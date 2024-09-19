@@ -28,7 +28,7 @@ export const wagmiConfig = (() => {
   }
 
   return getDefaultConfig({
-    appName: "Equito PingPong",
+    appName: "Equito lending",
     projectId,
     wallets: [
       ...getDefaultWallets().wallets,

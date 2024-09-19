@@ -8,7 +8,7 @@ export default function Navbar() {
       <div className="gpt3__navbar-links">
         <div className="gpt3__navbar-links_logo">
           <NavLink to="/">
-            <h2>Logo</h2>
+            <h2>Lending</h2>
           </NavLink>
         </div>
       </div>

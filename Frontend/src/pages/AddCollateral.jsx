@@ -3,19 +3,40 @@ import ChainSelect from "@/components/chain-select";
 // import { ChainCard } from "@/components/chain-card";S
 import { useEquito } from "@/components/providers/equito/equito-provider";
 import "./addCollateral.css";
+import { formatUnits, parseEther, parseEventLogs, parseUnits } from "viem";
+import { useReadContract, useWriteContract } from "wagmi";
+import LendingAbi from "@/lib/abi/lending.abi.ts";
+import { useAccount } from "wagmi";
 
 export default function AddCollateral() {
   const [amount, setAmount] = useState("");
   const { chain } = useEquito()["from"];
+  const { data, writeContractAsync } = useWriteContract();
+  const { address, isConnected } = useAccount();
+  const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
   console.log("hi");
   console.log(chain);
 
-  const handleAddCollateral = () => {
-    // Here you would integrate with the blockchain to add collateral
-    console.log(
-      `Adding ${amount} ${selectedToken} as collateral on ${selectedChain}`
-    );
+  const { data: collateral } = useReadContract({
+    address: chain?.LendingContract,
+    abi: LendingAbi,
+    functionName: "_balances",
+    args: [address || NATIVE_ADDRESS],
+    chainId: chain?.definition.id,
+  });
+
+  console.log("Fee:", collateral);
+  console.log(formatUnits(collateral || 0, 18));
+
+  const handleAddCollateral = async () => {
+    const hash1 = writeContractAsync({
+      address: chain?.LendingContract,
+      abi: LendingAbi,
+      functionName: "giveCollateral",
+      value: [parseUnits(amount, 18)],
+      chainId: chain?.definition.id,
+    });
 
     // Reset form or show success message
   };
@@ -24,21 +45,6 @@ export default function AddCollateral() {
     <div className="addCollateral_container">
       <div className="addCollateral_container_container">
         <ChainSelect mode="from" />
-        {/* <div>
-          <label>Selected Token:</label>
-          <div>{chain?.definition.nativeCurrency.symbol}</div>
-        </div> */}
-        <div>
-          {/* <label>Amount:</label> */}
-          {/* <input
-            // type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full p-3 border rounded bg-gray-50 text-gray-800"
-            placeholder="Enter amount"
-          /> */}
-        </div>
-
         <div className="addCollateral_container_from_input">
           <input
             // type="number"
@@ -58,7 +64,7 @@ export default function AddCollateral() {
           <button onClick={handleAddCollateral}>Add Collateral</button>
           <div>
             <p>
-              Collateral Amount: 0.00{" "}
+              Collateral Amount: {formatUnits(collateral || 0, 18)}{" "}
               {chain?.definition.nativeCurrency.symbol || "ETH"}
             </p>
           </div>
