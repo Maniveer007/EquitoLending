@@ -349,6 +349,13 @@ export default [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getCollateralBack",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -543,6 +550,24 @@ export default [
         type: "uint256[]",
       },
       {
+        internalType: "address[]",
+        name: "swapAddresses",
+        type: "address[]",
+      },
+    ],
+    name: "setLendingAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "chainSelectors",
+        type: "uint256[]",
+      },
+      {
         components: [
           {
             internalType: "bytes32",
@@ -561,24 +586,6 @@ export default [
       },
     ],
     name: "setPeers",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256[]",
-        name: "chainSelectors",
-        type: "uint256[]",
-      },
-      {
-        internalType: "address[]",
-        name: "swapAddresses",
-        type: "address[]",
-      },
-    ],
-    name: "setSwapAddress",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -252,11 +252,6 @@ contract CrossChainLending is EquitoApp {
         return address(this).balance;
     }
 
-
-
-    function withdraw() public {
-        payable(msg.sender).transfer(address(this).balance);
-    }
 }
 
 
