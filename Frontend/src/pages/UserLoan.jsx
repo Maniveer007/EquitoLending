@@ -51,6 +51,10 @@ const UserLoan = () => {
       return chain.chainSelector == (borrow != undefined ? borrow[3] : 0);
     })[0];
 
+    const sourceChain = chains.filter((chain) => {
+      return chain.chainSelector == (borrow != undefined ? borrow[2] : 0);
+    })[0];
+
     // console.log(
     //   destinationChain != undefined ? destinationChain.definition.id : 0
     // );
@@ -63,6 +67,16 @@ const UserLoan = () => {
       chainId: destinationChain?.definition.id,
     });
 
+    const { data: HealthFactor } = useReadContract({
+      address: chain?.LendingContract,
+      abi: LendingAbi,
+      functionName: "HealthFactor",
+      args: [address || NATIVE_ADDRESS],
+      chainId: chain?.definition.id,
+    });
+
+    console.log(HealthFactor, chain?.definition.id);
+
     // console.log("Fees:", fees);
 
     if (borrow == undefined || borrow[2] != chain.chainSelector) {
@@ -72,12 +86,11 @@ const UserLoan = () => {
       console.log();
 
       loans.push({
-        source: chains.filter((chain) => {
-          return chain.chainSelector == borrow[2];
-        })[0],
+        source: sourceChain,
         destination: destinationChain,
         repaymentamount: repaymentamount,
         fees: fees,
+        HealthFactor: Number(HealthFactor) / 100,
       });
     }
 
@@ -164,7 +177,7 @@ const UserLoan = () => {
                   arcWidth={0.3}
                   cornerRadius={3}
                   arcPadding={0.01}
-                  percent={0.9}
+                  percent={loan?.HealthFactor}
                   textColor={"white"}
                   style={{ width: "350px" }}
                   // hideText={true} // If you want to hide the text
