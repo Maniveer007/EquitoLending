@@ -72,7 +72,7 @@ contract CrossChainLendingTest is Test {
         lending.BorrowAmount(100,1, address(0x00156));
     }
 
-    function testCrossChainLending() public {
+    function testCrossChainLending_withNativeEth() public {
 
         address user = address(0x00156);
         vm.deal(user, 100 ether);
@@ -115,6 +115,7 @@ contract CrossChainLendingTest is Test {
 
         assertEq(userBalanceAfter, userBalanceBefore + 1 ether);
         assertEq(lendingBalanceAfter, lendingBalanceBefore - 1 ether);     
+        vm.stopPrank();
     }
 
     function testCrossChainLending_without_nativeEth() public {
@@ -160,5 +161,64 @@ contract CrossChainLendingTest is Test {
     
             assertEq(userBalanceAfter, userBalanceBefore + 1 ether);
             assertEq(lendingBalanceAfter, lendingBalanceBefore - 1 ether);     
+    }
+
+    function test_liquidate() public {
+        testCrossChainLending_without_nativeEth();
+        address user = address(0x00156);
+        vm.startPrank(OWNER);
+        uint256[] memory chainSelectors = new uint256[](2);
+        chainSelectors[0] = 1;
+        chainSelectors[1] = 1;
+        address[] memory tokens = new address[](2);
+        tokens[0] = address(token0);
+        tokens[1] = nativeToken;
+        uint256[] memory prices = new uint256[](2);
+        prices[0] = 10 ;
+        prices[1] = 1000;
+
+        lending.setTokenPrice(chainSelectors, tokens, prices);
+
+        assertGe(lending.HealthFactor(user),90);
+
+        address rand = vm.addr(70);
+        vm.startPrank(rand);
+        vm.deal(rand, 1 ether);
+
+        uint randcollateralBefore = lending._balances(rand);
+        lending.liquidate{value : router.getFee(address(this))}(user);
+
+        CrossChainLending.Borrow memory borrow = CrossChainLending.Borrow({
+                User: EquitoMessageLibrary.addressToBytes64(user) ,
+                LoanAmount : 1 ether,
+                sourceChainSelector : 1, //any source chain selector
+                destinationChainSelector : 1, // destinarion chain selector of our router
+                destinationChainToken : address(token0),
+                StartTime : block.timestamp
+            });
+            
+            uint lendingBalanceBefore = token0.balanceOf(address(lending));
+            bytes1 operationId = 0x03; 
+            bytes memory data = abi.encode(operationId,borrow);
+    
+            EquitoMessage memory message = EquitoMessage({
+                blockNumber: 1,
+                sourceChainSelector: 1,
+                sender: EquitoMessageLibrary.addressToBytes64(address(lending)),
+                destinationChainSelector: 1,
+                receiver: EquitoMessageLibrary.addressToBytes64(address(lending)),
+                hashedData: keccak256(data)
+            });
+    
+            router.deliverAndExecuteMessage(
+                message,
+                data,
+                0,
+                bytes("0")
+            );
+
+        uint randcollateralAfter = lending._balances(rand);
+        assertEq(randcollateralAfter, randcollateralBefore + 80 ether);
+
     }
 }

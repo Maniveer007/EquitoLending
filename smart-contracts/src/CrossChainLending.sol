@@ -82,6 +82,7 @@ contract CrossChainLending is EquitoApp {
             delete _userBorrow[router.chainSelector()][EquitoMessageLibrary.bytes64ToAddress(borrow.User)];
         }
         else if (operationID == 0x03){
+
             delete _userBorrow[router.chainSelector()][EquitoMessageLibrary.bytes64ToAddress(borrow.User)];
         }
 
@@ -96,8 +97,10 @@ contract CrossChainLending is EquitoApp {
         uint destinationChainSelector,
         address destinationChainToken
         ) public payable {
-        
-        // require(_userBorrow[router.chainSelector()][msg.sender].LoanAmount == 0,"User already has a loan");
+        require(_tokenPrice[router.chainSelector()][NATIVE_TOKEN] != 0,"Token Price is not set");
+        require(_tokenPrice[destinationChainSelector][destinationChainToken] != 0,"Token Price is not set");
+        // if a user has taken a loan from this chain as collateral then he cannot take another loan
+        require(_userBorrow[router.chainSelector()][msg.sender].LoanAmount == 0,"User already has a loan");
         require(calculateDestinationMaximumBorrowAmount(msg.sender,destinationChainSelector,destinationChainToken) >= _amount,
         "user cannot withdraw greater than their max borrow amount");
 
@@ -145,11 +148,10 @@ contract CrossChainLending is EquitoApp {
         }
     }
 
-    /// @notice liquidate this will liquidate loans which exceeded liquidation ratio
+    /// @notice liquidate this will liquidate loans which exceeded liquidation ratio on source chain
     function liquidate(address user ) public payable {
         require(HealthFactor(user)>LIQUIDATION_RATIO,"USER Loan is not Liquidatable");
 
-        delete _userBorrow[router.chainSelector()][user];
         _balances[msg.sender] = _balances[user];
         _balances[user] = 0;
 
@@ -162,6 +164,7 @@ contract CrossChainLending is EquitoApp {
          _userBorrow[router.chainSelector()][user].destinationChainSelector,
          data
         );
+        delete _userBorrow[router.chainSelector()][user];
     }
 
     /// @notice calculateRepaymentAmount calculates amount to be repayed on destination chain
@@ -222,6 +225,7 @@ contract CrossChainLending is EquitoApp {
         Borrow memory borrow = _userBorrow[router.chainSelector()][user];
         require(borrow.sourceChainSelector == router.chainSelector()
             ,"User is Not Taken Loan On This Account");
+        require(borrow.LoanAmount != 0,"User is Not Taken Loan On This Account");
             /*
                 repayment amount on destination chain
             ________________________________________  x 100
